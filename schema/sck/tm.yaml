@@ -1,0 +1,72 @@
+# TM — Threat Model
+# Kit: SCK (Security & Compliance Kit), Layer 10
+# Source: aieos-security-compliance-kit/docs/specs/tm-spec.md
+
+artifact_type: TM
+kit: SCK
+layer: 10
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "SAD frozen in EEK — system architecture is known and threat analysis can begin"
+
+upstream_dependencies:
+  - artifact_type: SAD
+    condition: "frozen — provides component inventory, integration points, data flows"
+  - artifact_type: ACF
+    condition: "optional — section 3 security guardrails"
+
+downstream_consumers:
+  - artifact_type: SAR
+    kit: SCK
+  - artifact_type: VP
+    kit: QAK
+
+principles_files:
+  - "security-principles.md"
+
+hard_gates:
+  - name: attack_surface_coverage
+    rule: "All SAD components and integration points are assessed; every data flow crossing a trust boundary is identified; each entry has component/interface, exposure type, and trust boundary"
+    fail_examples:
+      - "SAD components missing from analysis"
+      - "Integration points not assessed"
+      - "Data flows across trust boundaries not identified"
+
+  - name: threat_actor_identification
+    rule: "At least two relevant threat actor categories identified; each has category name, capability level (low/medium/high/advanced), motivation, and targeted attack surfaces"
+    fail_examples:
+      - "Only one threat actor identified"
+      - "Generic 'hacker' without specifics"
+      - "Threat actors not mapped to attack surfaces"
+
+  - name: mitigation_mapping
+    rule: "Every identified threat has a mitigation or accepted risk with justification; mitigations are specific and actionable with type (preventive/detective/corrective) and implementation status"
+    fail_examples:
+      - "Threats with no mitigation entry"
+      - "Mitigations described generically ('improve security')"
+      - "Accepted risks without justification or approver"
+
+  - name: residual_risk_assessment
+    rule: "Every mitigated threat has residual risk with severity and basis; Critical/High residual risks have escalation path or additional mitigation plan; overall risk posture stated"
+    fail_examples:
+      - "Mitigated threats without residual risk assessment"
+      - "Critical/High residual risks without escalation path"
+      - "No overall risk posture statement"
+
+required_sections:
+  - name: Document Control
+  - name: System Overview
+  - name: Attack Surface Analysis
+  - name: Threat Actor Identification
+  - name: Threat Analysis
+  - name: Mitigation Mapping
+  - name: Residual Risk Assessment
+
+file_paths:
+  spec: docs/specs/tm-spec.md
+  template: docs/artifacts/tm-template.md
+  prompt: docs/prompts/tm-prompt.md
+  validator: docs/validators/tm-validator.md

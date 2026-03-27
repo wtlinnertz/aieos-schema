@@ -1,0 +1,50 @@
+# Schema for WDD (EEK — Layer 4)
+artifact_type: WDD
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: traceability
+    rule: "Parent TDD referenced and frozen"
+  - name: scope
+    rule: "Scope copied from TDD; no expansion"
+  - name: atomicity
+    rule: "One outcome per work item; no bundled work"
+  - name: inputs_outputs
+    rule: "Inputs and outputs explicitly listed for each item"
+  - name: acceptance_criteria
+    rule: "Executable acceptance criteria with failure behavior; format matches assignee type"
+  - name: granularity
+    rule: "Single PR, single subsystem, no cross-environment execution"
+  - name: readiness
+    rule: "No design decisions remain; dependencies explicitly listed"
+  - name: work_groups
+    rule: "Every item in one group; each group has business capability and group-level acceptance criteria"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Scope and Non-Goals"
+    required: true
+  - name: "Work Items"
+    required: true
+  - name: "Work Groups"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/wdd-spec.md"
+  template: "docs/artifacts/wdd-template.md"
+  prompt: "docs/prompts/wdd-prompt.md"
+  validator: "docs/validators/wdd-validator.md"
+
+upstream_dependencies:
+  - artifact_type: TDD
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: ORD
+    kit: EEK

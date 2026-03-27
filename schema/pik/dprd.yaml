@@ -1,0 +1,72 @@
+# Schema for DPRD (PIK — Layer 2)
+artifact_type: DPRD
+kit: PIK
+layer: 2
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: problem_definition
+    rule: "Clear problem statement with identified users and rationale"
+  - name: goals
+    rule: "Explicit goals with measurable success criteria"
+  - name: scope
+    rule: "In-scope clearly defined, explicit non-goals, no implied scope"
+  - name: requirements
+    rule: "Functional and non-functional requirements explicitly stated"
+  - name: constraints
+    rule: "Constraints and assumptions documented"
+  - name: readiness
+    rule: "No unresolved critical questions, internally consistent"
+  - name: upstream_traceability
+    rule: "Problem traces to PFD, goals trace to VH, assumptions trace to AR, validation status reflects EL"
+  - name: no_scope_expansion
+    rule: "No expansion beyond the collective scope of PFD, VH, AR, and EL"
+  - name: principles_coverage
+    rule: "DPRD includes a principles coverage table accounting for every directive from product-discovery-principles.md (§1–§10); each directive addressed or explicitly marked N/A with justification"
+
+required_sections:
+  - name: "1. Document Control"
+    required: true
+  - name: "2. Problem Statement"
+    required: true
+  - name: "3. Goals (What 'Success' Means)"
+    required: true
+  - name: "4. Non-Goals (Hard Exclusions)"
+    required: true
+  - name: "5. Users / Personas"
+    required: true
+  - name: "6. Requirements"
+    required: true
+  - name: "7. Constraints (Hard Guardrails)"
+    required: true
+  - name: "8. Assumptions"
+    required: true
+  - name: "9. Out of Scope by Default"
+    required: true
+  - name: "10. Open Questions"
+    required: true
+  - name: "11. Acceptance / Success Criteria"
+    required: true
+  - name: "12. Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/discovery-prd-spec.md"
+  template: "docs/artifacts/discovery-prd-template.md"
+  prompt: "docs/prompts/discovery-prd-prompt.md"
+  validator: "docs/validators/discovery-prd-validator.md"
+
+upstream_dependencies:
+  - artifact_type: PFD
+    condition: "frozen"
+  - artifact_type: VH
+    condition: "frozen"
+  - artifact_type: AR
+    condition: "frozen"
+  - artifact_type: EL
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: PRD
+    kit: EEK

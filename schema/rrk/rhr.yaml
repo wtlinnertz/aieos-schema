@@ -1,0 +1,46 @@
+# Schema for RHR (RRK — Layer 6)
+artifact_type: RHR
+kit: RRK
+layer: 6
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: review_period
+    rule: "RHR ID, coverage period start/end dates, service name, review owner, and SRP ID (Frozen) present; multiple SRP versions referenced if applicable"
+  - name: slo_compliance
+    rule: "Every SRP SLO reported with target, actual compliance %, and Met/Missed verdict; measurement data gaps documented; compliance based on monitoring data not assertions"
+  - name: error_budget_state
+    rule: "Remaining budget per SLO in percentage and time equivalent; burn rate over period; policy implication per SRP §3 stated; freeze condition crossings noted"
+  - name: incident_summary
+    rule: "Count and severity breakdown (all four levels); total user-impact duration in clock time; pattern observation present (or 'no patterns identified' — not blank); IRs identified by ID"
+  - name: layer7_feed
+    rule: "Reliability trend with basis; systemic issues assessed (or 'none identified' — not blank); improvement signals; recommended continued watch items (or 'none' — not blank)"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "SLO Compliance"
+    required: true
+  - name: "Error Budget State"
+    required: true
+  - name: "Incident Summary"
+    required: true
+  - name: "Handoff to Layer 7"
+    required: true
+
+file_paths:
+  spec: "docs/specs/rhr-spec.md"
+  template: "docs/artifacts/rhr-template.md"
+  prompt: "docs/prompts/rhr-prompt.md"
+  validator: "docs/validators/rhr-validator.md"
+
+upstream_dependencies:
+  - artifact_type: SRP
+    condition: "frozen"
+  - artifact_type: IR
+    condition: "frozen (all from coverage period)"
+
+downstream_consumers:
+  - artifact_type: ES
+    kit: IEK

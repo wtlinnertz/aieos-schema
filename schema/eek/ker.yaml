@@ -1,0 +1,48 @@
+# Schema for KER (EEK — Layer 4)
+artifact_type: KER
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: true
+
+hard_gates:
+  - name: document_control
+    rule: "Record ID, date, and work summary present"
+  - name: classification_check
+    rule: "Frozen classification record referenced (routing to EEK), or absence explicitly justified"
+  - name: path_selected
+    rule: "Exactly one entry path selected with required evidence: Path A requires DPRD reference and EL experiment references confirmed (or absence explained); Path B requires work type explicitly selected with justification specific and consistent with stated work type"
+  - name: priority_on_record
+    rule: "Priority decision confirmed with a traceable reference"
+  - name: scope_bounded
+    rule: "Work boundary stated with enough specificity to confirm it is bounded"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Classification Check"
+    required: true
+  - name: "Entry Path"
+    required: true
+  - name: "Priority Decision"
+    required: true
+  - name: "Scope Boundary"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/kit-entry-spec.md"
+  template: "docs/artifacts/kit-entry-template.md"
+  prompt: null
+  validator: "docs/validators/kit-entry-validator.md"
+
+upstream_dependencies:
+  - artifact_type: WCR
+    condition: "frozen, or absence justified"
+  - artifact_type: DPRD
+    condition: "frozen (Path A)"
+
+downstream_consumers:
+  - artifact_type: PRD
+    kit: EEK

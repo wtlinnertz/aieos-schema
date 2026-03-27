@@ -1,0 +1,70 @@
+# DSR — Data Schema Record
+# Kit: DCK (Data & Configuration Kit), Layer 11
+# Source: aieos-data-configuration-kit/docs/specs/dsr-spec.md
+
+artifact_type: DSR
+kit: DCK
+layer: 11
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "TDD frozen in EEK when data models are defined — schema design is known"
+  - "New version issued when schemas evolve over time"
+
+upstream_dependencies:
+  - artifact_type: TDD
+    condition: "frozen — provides data models and schema definitions"
+
+downstream_consumers:
+  - artifact_type: DMR
+    kit: DCK
+
+hard_gates:
+  - name: schema_inventory
+    rule: "All schemas identified with schema name, type (database | api_contract | event_schema | config_format), current version, description, and field list; names unique; schemas traceable to TDD"
+    fail_examples:
+      - "Schema listed without version number"
+      - "Schema listed without type classification"
+      - "Schemas present that are not traceable to the TDD"
+
+  - name: compatibility_rules
+    rule: "Backward and forward compatibility requirements stated per schema; direction specified; version range specified; breaking changes have approval process documented"
+    fail_examples:
+      - "Compatibility requirements absent for a schema"
+      - "'Compatible' without specifying direction"
+      - "Breaking changes allowed without approval process"
+
+  - name: migration_plan
+    rule: "Schema changes have migration steps with source/target version, ordered actions, rollback procedure, data preservation statement, and estimated duration; initial version has explicit 'no migration required' statement"
+    fail_examples:
+      - "Schema change without migration steps"
+      - "Migration steps without rollback procedure"
+      - "'TBD' migration plan"
+
+  - name: data_validation
+    rule: "Validation rules defined for every schema field; rules include type constraint and required/optional status at minimum; rules are specific enough to be machine-evaluable"
+    fail_examples:
+      - "Schema field with no validation rule"
+      - "Validation stated as 'must be valid' without specifics"
+
+  - name: version_history
+    rule: "Every schema version tracked with version number, date, change description, and author; initial version entry present; entries in chronological order"
+    fail_examples:
+      - "Version without date"
+      - "Initial version entry missing"
+
+required_sections:
+  - name: Document Control
+  - name: Schema Inventory
+  - name: Compatibility Rules
+  - name: Migration Plan
+  - name: Data Validation
+  - name: Version History
+
+file_paths:
+  spec: docs/specs/dsr-spec.md
+  template: docs/artifacts/dsr-template.md
+  prompt: docs/prompts/dsr-prompt.md
+  validator: docs/validators/dsr-validator.md

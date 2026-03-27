@@ -1,0 +1,80 @@
+# SAR — Security Assessment Record
+# Kit: SCK (Security & Compliance Kit), Layer 10
+# Source: aieos-security-compliance-kit/docs/specs/sar-spec.md
+
+artifact_type: SAR
+kit: SCK
+layer: 10
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "Code complete in EEK — implementation available for security verification against TM mitigations and ACF guardrails"
+
+upstream_dependencies:
+  - artifact_type: TM
+    condition: "frozen — provides mitigation list to verify"
+  - artifact_type: ACF
+    condition: "frozen — section 3 security guardrails to verify"
+  - artifact_type: TDD
+    condition: "frozen — provides evidence base"
+
+downstream_consumers:
+  - artifact_type: VP
+    kit: QAK
+  - artifact_type: RER
+    kit: REK
+
+principles_files:
+  - "security-principles.md"
+
+hard_gates:
+  - name: guardrail_verification
+    rule: "Every ACF section 3 guardrail has a verification entry with status and concrete evidence; no guardrail is verified without evidence; 'not applicable' entries include justification"
+    fail_examples:
+      - "ACF section 3 guardrails missing from verification"
+      - "Guardrails marked 'verified' without evidence"
+      - "Evidence is an assertion rather than a concrete reference"
+
+  - name: mitigation_verification
+    rule: "Every TM mitigation has a verification entry with status and evidence or deferral justification; deferred mitigations have risk acceptance, approver, and target date"
+    fail_examples:
+      - "TM mitigations missing from verification"
+      - "'Deferred' without risk acceptance or target date"
+
+  - name: vulnerability_assessment
+    rule: "All discovered vulnerabilities documented with ID (V-NNN), severity, component, and disposition; no unaddressed Critical or High vulnerabilities remain; if no vulnerabilities found, methodology is stated"
+    fail_examples:
+      - "Critical/High vulnerabilities without disposition"
+      - "'No vulnerabilities' without methodology reference"
+
+  - name: authentication_authorization_review
+    rule: "Authentication flows described and verified with evidence; authorization model described and verified; session management addressed"
+    fail_examples:
+      - "Authentication flows not described"
+      - "Authorization model absent"
+      - "Session management not addressed"
+
+  - name: data_handling_review
+    rule: "Data classification stated per data type; data at rest and in transit protection verified with evidence; PII/sensitive data handling explicitly verified; retention policy stated"
+    fail_examples:
+      - "Data classification absent"
+      - "Data protection claimed without evidence"
+      - "PII handling not addressed"
+
+required_sections:
+  - name: Document Control
+  - name: Assessment Scope
+  - name: Guardrail Verification
+  - name: Mitigation Verification
+  - name: Vulnerability Assessment
+  - name: Authentication and Authorization Review
+  - name: Data Handling Review
+  - name: Assessment Verdict
+
+file_paths:
+  spec: docs/specs/sar-spec.md
+  template: docs/artifacts/sar-template.md
+  prompt: docs/prompts/sar-prompt.md
+  validator: docs/validators/sar-validator.md

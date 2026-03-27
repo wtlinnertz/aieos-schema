@@ -1,0 +1,54 @@
+# Schema for SRP (RRK — Layer 6)
+artifact_type: SRP
+kit: RRK
+layer: 6
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: document_control
+    rule: "SRP ID, service name, owner (team/role not individual), version, status, and scope present"
+  - name: slo_definitions
+    rule: "At least 2 SLOs defined; each SLO has named SLI metric, target %, measurement window, and basis for target"
+  - name: error_budget
+    rule: "Budget calculated per SLO (100% - target%) in both percentage and time equivalent; consumption policy stated; freeze/slowdown condition stated"
+  - name: burn_rate_alerts
+    rule: "Fast burn alert (numeric threshold, window, budget consumption basis) and slow burn alert (numeric threshold, window, budget consumption basis) defined; alert routing defined for both"
+  - name: measurement_methodology
+    rule: "Each SLI has exact metric name (as in monitoring system), data source, and calculation method; uninstrumented SLIs documented as gaps with target dates"
+  - name: exclusions
+    rule: "Maintenance window policy stated; planned downtime handling stated; process for exclusion declarations stated if exclusions apply"
+  - name: standard_enforceability
+    rule: "All standards are specific and numeric; no 'should,' 'ideally,' 'when possible,' or equivalent aspirational language"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "SLO Definitions"
+    required: true
+  - name: "Error Budget"
+    required: true
+  - name: "Burn Rate Alerts"
+    required: true
+  - name: "Measurement Methodology"
+    required: true
+  - name: "Exclusions"
+    required: true
+  - name: "Scope and Exceptions"
+    required: true
+
+file_paths:
+  spec: "docs/specs/srp-spec.md"
+  template: "docs/artifacts/srp-template.md"
+  prompt: "docs/prompts/srp-prompt.md"
+  validator: "docs/validators/srp-validator.md"
+
+upstream_dependencies:
+  - artifact_type: SRER
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: IR
+    kit: RRK
+  - artifact_type: RHR
+    kit: RRK

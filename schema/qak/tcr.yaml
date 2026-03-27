@@ -1,0 +1,62 @@
+# TCR — Test Campaign Record
+# Kit: QAK (Quality Assurance Kit), Layer 9
+# Source: aieos-quality-assurance-kit/docs/specs/tcr-spec.md
+
+artifact_type: TCR
+kit: QAK
+layer: 9
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "VP frozen; test campaign executed against the Verification Plan"
+
+upstream_dependencies:
+  - artifact_type: VP
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: QGR
+    kit: QAK
+
+hard_gates:
+  - name: plan_execution
+    rule: "All VP tests in this campaign's scope are accounted for: executed with results, or deviation documented with reason; VP ID referenced"
+    fail_examples:
+      - "VP tests in scope not accounted for"
+      - "VP ID not referenced"
+
+  - name: evidence_completeness
+    rule: "Every test result has a concrete evidence reference (log, metric, screenshot); no assertions without evidence; failed tests have failure descriptions"
+    fail_examples:
+      - "Tests listed as 'passed' without evidence reference"
+      - "Failed tests without failure description"
+
+  - name: defect_tracking
+    rule: "All defects found are listed with defect ID, severity, status, and affected component; or explicit 'no defects found' statement"
+    fail_examples:
+      - "Defects found but not listed"
+      - "Defects listed without severity"
+      - "Empty section without 'no defects found' statement"
+
+  - name: environment_verification
+    rule: "Tests ran in the VP-specified environment (or deviation documented with impact assessment); environment configuration details present"
+    fail_examples:
+      - "Environment not identified"
+      - "Deviation from VP environment not documented"
+
+required_sections:
+  - name: Document Control
+  - name: Campaign Summary
+  - name: Test Results
+  - name: Environment Verification
+  - name: Defect Summary
+  - name: Coverage Assessment
+  - name: Deviations
+
+file_paths:
+  spec: docs/specs/tcr-spec.md
+  template: docs/artifacts/tcr-template.md
+  prompt: docs/prompts/tcr-prompt.md
+  validator: docs/validators/tcr-validator.md

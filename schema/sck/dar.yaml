@@ -1,0 +1,67 @@
+# DAR — Dependency Audit Record
+# Kit: SCK (Security & Compliance Kit), Layer 10
+# Source: aieos-security-compliance-kit/docs/specs/dar-spec.md
+
+artifact_type: DAR
+kit: SCK
+layer: 10
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "Code complete in EEK — dependency audit recommended before release; can be generated at any point in the delivery lifecycle"
+
+upstream_dependencies: []
+
+principles_files:
+  - "compliance-principles.md"
+
+hard_gates:
+  - name: dependency_inventory
+    rule: "All direct dependencies listed with name, version, type, and purpose; all transitive dependencies listed with parent dependency; total count stated"
+    fail_examples:
+      - "Only direct dependencies listed"
+      - "Dependencies listed without versions"
+      - "Total count absent"
+
+  - name: vulnerability_assessment
+    rule: "All known CVEs listed with CVE ID, affected dependency, severity rating, description, and patch availability; if no CVEs found, scan methodology and date cited; severity uses recognized scoring system"
+    fail_examples:
+      - "CVEs mentioned but not individually listed"
+      - "'No known vulnerabilities' without scan methodology reference"
+
+  - name: license_compliance
+    rule: "Every dependency has license identified; each license has compatibility assessment; incompatible licenses flagged with explanation; unknown licenses have review plan with owner and date; license distribution summary provided"
+    fail_examples:
+      - "Dependencies without license identification"
+      - "Incompatible licenses not flagged"
+      - "Unknown licenses without review plan"
+
+  - name: risk_classification
+    rule: "Every direct dependency classified by supply chain risk level with justification considering maintenance, provenance, criticality, and adoption; High/Critical risk dependencies have documented risk response"
+    fail_examples:
+      - "Dependencies without risk classification"
+      - "Classification without justification"
+      - "High/Critical risk dependencies without risk response"
+
+  - name: remediation_plan
+    rule: "Every Critical and High severity vulnerability has remediation entry with action, owner, and target date; accepted risks have justification and approver; if no remediation needed, explicitly stated"
+    fail_examples:
+      - "Critical/High vulnerabilities without remediation plan"
+      - "Accepted risks without justification"
+
+required_sections:
+  - name: Document Control
+  - name: Dependency Inventory
+  - name: Vulnerability Assessment
+  - name: License Compliance
+  - name: Supply Chain Risk Classification
+  - name: Remediation Plan
+  - name: Audit Summary
+
+file_paths:
+  spec: docs/specs/dar-spec.md
+  template: docs/artifacts/dar-template.md
+  prompt: docs/prompts/dar-prompt.md
+  validator: docs/validators/dar-validator.md

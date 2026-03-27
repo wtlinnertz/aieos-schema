@@ -1,0 +1,82 @@
+# PRR — Peer Review Record
+# Kit: PRK (Peer Review Kit), Layer 14
+# Source: aieos-peer-review-kit/docs/specs/prr-spec.md
+
+artifact_type: PRR
+kit: PRK
+layer: 14
+spec_version: "v1.1"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "Artifact passes its own validator and reaches a review point before freeze"
+  - "Review points: Concept Review (PIK/DPRD), Architecture Review (EEK/SAD), Technical Design Review (EEK/TDD), Implementation Readiness (EEK/WDD), Code Review (EEK/ORD), Integration Review (QAK/QGR), Operational Readiness (REK/RP), Post-Deployment Review (RRK/RHR), Incident Review (ODK/PMR)"
+
+upstream_dependencies:
+  - artifact_type: DPRD
+    condition: "validated — Concept Review point"
+  - artifact_type: SAD
+    condition: "validated — Architecture Review point"
+  - artifact_type: TDD
+    condition: "validated — Technical Design Review point"
+  - artifact_type: WDD
+    condition: "validated — Implementation Readiness point"
+  - artifact_type: ORD
+    condition: "validated — Code Review point"
+  - artifact_type: QGR
+    condition: "validated — Integration Review point"
+  - artifact_type: RP
+    condition: "validated — Operational Readiness point"
+  - artifact_type: RHR
+    condition: "validated — Post-Deployment Review point"
+  - artifact_type: PMR
+    condition: "validated — Incident Review point"
+
+hard_gates:
+  - name: lens_coverage
+    rule: "All required lenses for the stated review point were executed and have a subsection in Individual Lens Reviews; the review point is valid (exists in the review point mapping table)"
+    fail_examples:
+      - "Required lens missing from Individual Lens Reviews"
+      - "Review point not in the mapping table"
+
+  - name: finding_actionability
+    rule: "Every finding across all lens subsections includes severity (critical/high/medium/low), description, location in the reviewed artifact, and a recommended mitigation; no finding is missing any of these four fields"
+    fail_examples:
+      - "Finding without severity classification"
+      - "Finding without location in the reviewed artifact"
+      - "Finding without recommendation"
+
+  - name: conflict_surfacing
+    rule: "When lens recommendations conflict, each conflict is explicitly identified with both perspectives and a suggested resolution path; or 'no conflicts' is explicitly stated with justification; no detectable conflict is left unaddressed"
+    fail_examples:
+      - "Conflicting recommendations exist but no conflict documented"
+      - "Conflict without a resolution path"
+
+  - name: artifact_traceability
+    rule: "PRR identifies the exact artifact ID, artifact type, and status (validated/frozen) of the document under review in both Document Control and Review Context"
+    fail_examples:
+      - "Reviewed artifact ID not present"
+      - "Review point not named"
+
+  - name: disposition_justified
+    rule: "Overall disposition (PASS/FAIL) is justified: PASS requires no critical findings and no unmitigated high findings; FAIL identifies all blocking findings in the Required Remediations section; disposition does not contradict the finding summary"
+    fail_examples:
+      - "PASS with critical findings present"
+      - "PASS with unmitigated high findings"
+      - "FAIL without identifying blocking findings"
+
+required_sections:
+  - name: Document Control
+  - name: Review Context
+  - name: Individual Lens Reviews
+  - name: Conflict Analysis
+  - name: Aggregate Assessment
+  - name: Required Remediations (if FAIL)
+  - name: Completeness Checklist
+
+file_paths:
+  spec: docs/specs/prr-spec.md
+  template: docs/artifacts/prr-template.md
+  prompt: docs/prompts/prr-prompt.md
+  validator: docs/validators/prr-validator.md

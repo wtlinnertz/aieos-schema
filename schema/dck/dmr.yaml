@@ -1,0 +1,66 @@
+# DMR — Data Migration Record
+# Kit: DCK (Data & Configuration Kit), Layer 11
+# Source: aieos-data-configuration-kit/docs/specs/dmr-spec.md
+
+artifact_type: DMR
+kit: DCK
+layer: 11
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "DSR frozen with schema changes that require data migration (structural changes, data format transformations, or data movement between systems)"
+
+upstream_dependencies:
+  - artifact_type: DSR
+    condition: "frozen"
+  - artifact_type: TDD
+    condition: "recommended — for behavioral context"
+  - artifact_type: SAD
+    condition: "recommended — for data store architecture"
+
+hard_gates:
+  - name: migration_inventory
+    rule: "Every schema change in the DSR that requires data migration has a corresponding entry in §2 with source/target schema, data store, estimated volume, and migration type (Online/Offline/Hybrid). No migration is referenced in §3-§6 that is absent from §2."
+    fail_examples:
+      - "DSR schema change requiring migration has no entry"
+      - "Migration referenced in strategy but absent from inventory"
+
+  - name: strategy_complete
+    rule: "Every migration in §2 has a strategy in §3 with approach, ordering constraints, duration estimate, and downtime requirement. No migration lacks a strategy."
+    fail_examples:
+      - "Migration listed in inventory with no strategy"
+      - "Strategy without duration estimate"
+
+  - name: validation_criteria
+    rule: "Every migration has at least one blocking validation check in §4 with method and expected result. No migration lacks validation criteria."
+    fail_examples:
+      - "Migration without any validation check"
+      - "Validation check without method or expected result"
+
+  - name: rollback_defined
+    rule: "Every migration has a rollback procedure in §5 with strategy, steps, data loss risk, and duration. Migrations that cannot be reversed have explicit documentation of why and risk acceptance."
+    fail_examples:
+      - "Migration without rollback procedure"
+      - "Irreversible migration without explicit risk acceptance"
+
+  - name: dry_run_required
+    rule: "Every offline or hybrid migration has a dry run step in §6 on a non-production environment. Online migrations should have a dry run but it is not blocking."
+    fail_examples:
+      - "Offline migration without dry run step"
+      - "Hybrid migration without dry run on non-production environment"
+
+required_sections:
+  - name: Document Control
+  - name: Migration Inventory
+  - name: Migration Strategy
+  - name: Data Validation Criteria
+  - name: Rollback Procedure
+  - name: Execution Plan
+
+file_paths:
+  spec: docs/specs/dmr-spec.md
+  template: docs/artifacts/dmr-template.md
+  prompt: docs/prompts/dmr-prompt.md
+  validator: docs/validators/dmr-validator.md

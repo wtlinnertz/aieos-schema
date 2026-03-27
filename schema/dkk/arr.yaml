@@ -1,0 +1,68 @@
+# ARR — API Reference Record
+# Kit: DKK (Documentation & Knowledge Kit), Layer 13
+# Source: aieos-documentation-knowledge-kit/docs/specs/arr-spec.md
+
+artifact_type: ARR
+kit: DKK
+layer: 13
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "TDD frozen in EEK — API contracts and interface definitions available"
+  - "RR frozen in REK — released API requiring documentation"
+
+upstream_dependencies:
+  - artifact_type: TDD
+    condition: "frozen — provides API contracts and interface definitions"
+  - artifact_type: SAD
+    condition: "frozen — from EEK, provides system boundaries"
+
+principles_files:
+  - "documentation-principles.md"
+
+hard_gates:
+  - name: contract_fidelity
+    rule: "Every public API endpoint from the TDD is documented; no undocumented endpoints; no documented-but-removed endpoints"
+    fail_examples:
+      - "TDD endpoints missing from documentation"
+      - "Endpoints documented that are not in the TDD"
+
+  - name: request_response_completeness
+    rule: "Each endpoint has: method, path, parameters, request body schema (if applicable), response schema, status codes, and error responses"
+    fail_examples:
+      - "Parameters without type or required/optional designation"
+      - "Missing error response documentation"
+
+  - name: authentication_documented
+    rule: "Auth requirements stated per endpoint or globally; no endpoints with ambiguous auth; endpoints requiring no auth explicitly listed"
+    fail_examples:
+      - "Authentication method not described"
+      - "Endpoints with ambiguous auth requirements"
+
+  - name: example_coverage
+    rule: "Each endpoint has at least one request/response example with realistic data"
+    fail_examples:
+      - "Endpoints without request/response examples"
+
+  - name: versioning_stated
+    rule: "API version present; versioning mechanism described; deprecation policy stated (or explicitly noted as absent); changelog reference present"
+    fail_examples:
+      - "API version absent"
+      - "Versioning mechanism not described"
+      - "No changelog reference"
+
+required_sections:
+  - name: Document Control
+  - name: API Overview
+  - name: Authentication
+  - name: Endpoint Documentation
+  - name: Error Reference
+  - name: Versioning and Deprecation
+
+file_paths:
+  spec: docs/specs/arr-spec.md
+  template: docs/artifacts/arr-template.md
+  prompt: docs/prompts/arr-prompt.md
+  validator: docs/validators/arr-validator.md

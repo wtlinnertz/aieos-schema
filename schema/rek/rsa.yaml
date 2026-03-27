@@ -1,0 +1,56 @@
+# Schema for RSA (REK — Layer 5)
+artifact_type: RSA
+kit: REK
+layer: 5
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: upstream_evidence_cited
+    rule: "Every risk claim in §2–§4 cites a specific section of a frozen upstream artifact; no risk claims based on general assertions or the RSA author's independent analysis"
+  - name: risk_dimensions_covered
+    rule: "The Aggregate Risk Profile (§5) covers all four dimensions (Quality, Security, Deployment, Operational) with a risk level and source citation for each"
+  - name: safeguard_actionability
+    rule: "Every recommended safeguard (§6) is concrete, traces to a specific risk finding, and can be implemented in a Release Plan; no vague safeguards"
+  - name: residual_risk_justified
+    rule: "Every residual risk (§7) has an explicit acceptance rationale; no residual risk without justification; no contradiction between safeguards and residual risks"
+  - name: no_invented_evidence
+    rule: "The RSA does not perform its own quality analysis, security analysis, or risk assessment beyond what upstream artifacts provide; all findings are sourced, not originated"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Quality Risk Summary"
+    required: true
+  - name: "Security Risk Summary"
+    required: true
+  - name: "Deployment Risk Classification"
+    required: true
+  - name: "Aggregate Risk Profile"
+    required: true
+  - name: "Recommended Safeguards"
+    required: true
+  - name: "Residual Risk Acceptance"
+    required: true
+
+file_paths:
+  spec: "docs/specs/rsa-spec.md"
+  template: "docs/artifacts/rsa-template.md"
+  prompt: "docs/prompts/rsa-prompt.md"
+  validator: "docs/validators/rsa-validator.md"
+
+upstream_dependencies:
+  - artifact_type: RER
+    condition: "frozen"
+  - artifact_type: RCF
+    condition: "frozen"
+  - artifact_type: QGR
+    condition: "frozen (optional, when QAK adopted)"
+  - artifact_type: TM
+    condition: "frozen (optional, when SCK adopted)"
+  - artifact_type: SAR
+    condition: "frozen (optional, when SCK adopted)"
+
+downstream_consumers:
+  - artifact_type: RP
+    kit: REK

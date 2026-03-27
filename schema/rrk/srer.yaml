@@ -1,0 +1,48 @@
+# Schema for SRER (RRK — Layer 6)
+artifact_type: SRER
+kit: RRK
+layer: 6
+spec_version: "v1.0"
+entry_gate: true
+
+hard_gates:
+  - name: document_control
+    rule: "SRER ID, date, and service summary present"
+  - name: upstream_reference
+    rule: "RR ID referenced; RR status confirmed as Frozen; RR §7 fields (production state, monitoring, SLO baseline, watch items) present in SRER, not merely referenced"
+  - name: reliability_owner
+    rule: "Named individual (not team) as reliability owner with on-call contact information and scope stated"
+  - name: initial_slo_baseline
+    rule: "SLO baseline values captured with source identified; values trace to RR §7 or upstream document; not invented or defaulted"
+  - name: monitoring_confirmed
+    rule: "All RR §7 monitoring items confirmed active with alert thresholds recorded; gaps documented with resolution owner and target date; confirmation date present"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Upstream Reference"
+    required: true
+  - name: "Reliability Owner"
+    required: true
+  - name: "Initial SLO Baseline"
+    required: true
+  - name: "Monitoring Confirmation"
+    required: true
+  - name: "Completeness Checklist"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/srer-spec.md"
+  template: "docs/artifacts/srer-template.md"
+  prompt: null
+  validator: "docs/validators/srer-validator.md"
+
+upstream_dependencies:
+  - artifact_type: RR
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: SRP
+    kit: RRK

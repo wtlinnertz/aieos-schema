@@ -1,0 +1,70 @@
+# QGR — Quality Gate Record
+# Kit: QAK (Quality Assurance Kit), Layer 9
+# Source: aieos-quality-assurance-kit/docs/specs/qgr-spec.md
+
+artifact_type: QGR
+kit: QAK
+layer: 9
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "All TCRs frozen for this initiative; quality disposition needed before REK entry"
+
+upstream_dependencies:
+  - artifact_type: TCR
+    condition: "all frozen for this initiative"
+  - artifact_type: VP
+    condition: "frozen — for coverage assessment"
+
+downstream_consumers:
+  - artifact_type: RER
+    kit: REK
+
+hard_gates:
+  - name: tcr_completeness
+    rule: "All frozen TCRs for this initiative are referenced and summarized; no TCR omitted"
+    fail_examples:
+      - "TCR not listed that was frozen for this initiative"
+      - "TCR listed without summary of results"
+
+  - name: disposition_justified
+    rule: "Quality disposition (PASS/CONDITIONAL/FAIL) is explicitly supported by evidence from TCR summary, coverage assessment, and defect assessment; disposition does not contradict the evidence"
+    fail_examples:
+      - "PASS with open critical defects"
+      - "CONDITIONAL without stated conditions"
+      - "FAIL without specific blocking issues"
+
+  - name: defect_assessment
+    rule: "All critical and high severity defects are either resolved (fixed and verified), accepted with specific rationale, or identified as blocking issues; defect aggregate is consistent with TCR defect summaries"
+    fail_examples:
+      - "Critical defect listed as 'accepted' without specific rationale"
+      - "Defects from a TCR not included in the aggregate"
+
+  - name: coverage_assessment
+    rule: "Coverage is stated as executed/planned broken down by VP test category; coverage gaps identified with specific tests and reasons; coverage derived from TCR data"
+    fail_examples:
+      - "Coverage stated without VP reference"
+      - "Coverage not broken down by category"
+
+  - name: risk_assessment
+    rule: "Residual risks from accepted defects, coverage gaps, or test limitations are documented with impact and mitigation; or explicit 'no residual risks' with justification"
+    fail_examples:
+      - "Accepted defects exist but risk section says 'no risks'"
+      - "Risks listed without impact assessment"
+
+required_sections:
+  - name: Document Control
+  - name: TCR Summary
+  - name: Coverage Assessment
+  - name: Defect Assessment
+  - name: Risk Assessment
+  - name: Quality Disposition
+  - name: Completeness Checklist
+
+file_paths:
+  spec: docs/specs/qgr-spec.md
+  template: docs/artifacts/qgr-template.md
+  prompt: docs/prompts/qgr-prompt.md
+  validator: docs/validators/qgr-validator.md

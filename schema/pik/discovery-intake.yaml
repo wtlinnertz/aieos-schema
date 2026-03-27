@@ -1,0 +1,48 @@
+# Schema for Discovery Intake (PIK — Layer 2)
+artifact_type: DI
+kit: PIK
+layer: 2
+spec_version: "v1.0"
+entry_gate: true
+
+hard_gates:
+  - name: problem_defined
+    rule: "Problem is described in concrete terms (not vague or abstract); answers what is wrong, broken, or missing"
+  - name: users_identified
+    rule: "At least one affected user group is identified with a description of how they experience the problem"
+  - name: urgency_stated
+    rule: "'Why now' rationale is provided (triggering event, cost of inaction, deadline, or strategic shift)"
+  - name: evidence_present
+    rule: "Some evidence basis exists for the problem's existence (data, research, user feedback, or observation); evidence may be limited but must be explicitly stated"
+  - name: scope_bounded
+    rule: "Both in-scope and out-of-scope boundaries are stated; known constraints are documented or explicitly noted as 'none known'"
+  - name: no_solutions
+    rule: "No solution proposals, architecture, implementation details, or requirements are present in the intake form"
+
+required_sections:
+  - name: "Problem Context"
+    required: true
+  - name: "Users and Stakeholders"
+    required: true
+  - name: "Opportunity"
+    required: true
+  - name: "Current State"
+    required: true
+  - name: "Scope and Boundaries"
+    required: true
+  - name: "Assumptions and Risks"
+    required: true
+  - name: "Additional Context"
+    required: false
+
+file_paths:
+  spec: "docs/specs/discovery-intake-spec.md"
+  template: "docs/artifacts/discovery-intake-template.md"
+  prompt: null
+  validator: "docs/validators/discovery-intake-validator.md"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: PFD
+    kit: PIK

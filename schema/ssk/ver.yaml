@@ -1,0 +1,50 @@
+# Schema for VER (SSK — Layer 3)
+artifact_type: VER
+kit: SSK
+layer: 3
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: all_options_evaluated
+    rule: "Every sourcing option from the SOER has a complete evaluation subsection (or is formally withdrawn with justification and SOER amendment reference); at minimum Build + one alternative evaluated; all five structured assessments present for each option"
+  - name: criteria_coverage
+    rule: "Every SOER evaluation criterion is scored for every option using a consistently defined and uniformly applied rating scale; comparative summary table includes all options and all criteria; no new ratings introduced in the summary"
+  - name: evidence_based
+    rule: "Every claim in every option evaluation references specific evidence (documentation, pricing data, repository metrics, trial results, reference feedback); no assertions without evidence sources; evidence references are specific enough to be verifiable"
+  - name: integration_assessment
+    rule: "Each option's integration complexity is assessed with specific integration points identified (APIs, data migration, authentication, workflows); estimated effort is stated; integration complexity is grounded in evidence, not assertion"
+  - name: risk_assessment
+    rule: "Each option has a risk assessment covering technology risk, vendor/project viability, dependency risk, and compliance risk; each risk has likelihood and impact; risks are specific to the option, not generic"
+  - name: no_recommendation
+    rule: "No recommendation, preferred option, ranking by preference, or decision language is present anywhere in the VER; the VER evaluates and presents data; the SDR decides"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Evaluation Scope"
+    required: true
+  - name: "Option Evaluations"
+    required: true
+  - name: "Comparative Summary"
+    required: true
+  - name: "Evaluation Limitations"
+    required: true
+  - name: "Completeness Checklist"
+    required: true
+
+file_paths:
+  spec: "docs/specs/ver-spec.md"
+  template: "docs/artifacts/ver-template.md"
+  prompt: "docs/prompts/ver-prompt.md"
+  validator: "docs/validators/ver-validator.md"
+
+upstream_dependencies:
+  - artifact_type: SOER
+    condition: "frozen"
+  - artifact_type: DPRD
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: SDR
+    kit: SSK

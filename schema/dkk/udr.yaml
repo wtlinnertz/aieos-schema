@@ -1,0 +1,73 @@
+# UDR — User Documentation Record
+# Kit: DKK (Documentation & Knowledge Kit), Layer 13
+# Source: aieos-documentation-knowledge-kit/docs/specs/udr-spec.md
+
+artifact_type: UDR
+kit: DKK
+layer: 13
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "RR frozen in REK — new capability released requiring user documentation"
+  - "Significant feature change requiring documentation update"
+
+upstream_dependencies:
+  - artifact_type: RR
+    condition: "frozen — provides release scope"
+  - artifact_type: PRD
+    condition: "frozen — from PIK, provides requirements for traceability"
+  - artifact_type: WDD
+    condition: "frozen — from EEK, provides acceptance criteria for accuracy verification"
+
+principles_files:
+  - "documentation-principles.md"
+
+hard_gates:
+  - name: capability_coverage
+    rule: "Every released capability from the RR has a corresponding documentation section; no undocumented capabilities, no documented-but-unbuilt capabilities"
+    fail_examples:
+      - "RR capabilities missing from documentation"
+      - "Capabilities documented that are not in the RR"
+
+  - name: accuracy_traceability
+    rule: "Documentation claims trace to PRD requirements and WDD acceptance criteria; traceability matrix is complete with no untraced capabilities"
+    fail_examples:
+      - "Capabilities without PRD references"
+      - "Capabilities without WDD references"
+
+  - name: audience_clarity
+    rule: "Target audience explicitly stated with technical level; language appropriate for stated audience; no implementation jargon in end-user docs"
+    fail_examples:
+      - "Target audience absent"
+      - "Implementation jargon in end-user documentation"
+
+  - name: task_completeness
+    rule: "Documentation covers how to accomplish each user-facing task with prerequisites, steps, and expected outcomes; not just feature descriptions"
+    fail_examples:
+      - "Capabilities without associated tasks"
+      - "Tasks without step-by-step procedures"
+      - "Tasks written from the system's perspective"
+
+  - name: currency_metadata
+    rule: "Version, last-reviewed date, and applicable product version are present; review cadence or next review date stated"
+    fail_examples:
+      - "Document version absent"
+      - "Product version absent"
+      - "No review date or cadence"
+
+required_sections:
+  - name: Document Control
+  - name: Release Scope Summary
+  - name: Target Audience
+  - name: Capability Documentation
+  - name: Task Coverage
+  - name: Traceability Matrix
+  - name: Currency Metadata
+
+file_paths:
+  spec: docs/specs/udr-spec.md
+  template: docs/artifacts/udr-template.md
+  prompt: docs/prompts/udr-prompt.md
+  validator: docs/validators/udr-validator.md

@@ -1,0 +1,46 @@
+# Schema for TIR (SDK — Layer 1)
+artifact_type: TIR
+kit: SDK
+layer: 1
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: investment_inventory
+    rule: "Every technology area in scope is listed in §2; no known technologies silently omitted"
+  - name: driver_traced
+    rule: "Every investment in §2 traces to a PCR capability or operational need; no investment without a business driver"
+  - name: classification_present
+    rule: "Every technology in §2 has exactly one classification: adopt / hold / retire"
+  - name: migration_paths
+    rule: "Every retire technology in §2 has a retirement plan in §4 with: migration path, timeline, affected systems, risk assessment"
+  - name: pcr_alignment
+    rule: "Every adopt technology maps to at least one PCR capability in §5; every PCR capability with a technology dependency has a corresponding TIR entry"
+
+required_sections:
+  - name: "§1 Document Control"
+    required: true
+  - name: "§2 Technology Landscape"
+    required: true
+  - name: "§3 Adoption Plans"
+    required: true
+  - name: "§4 Retirement Plans"
+    required: true
+  - name: "§5 PCR Alignment"
+    required: true
+
+file_paths:
+  spec: "docs/specs/tir-spec.md"
+  template: "docs/artifacts/tir-template.md"
+  prompt: "docs/prompts/tir-prompt.md"
+  validator: "docs/validators/tir-validator.md"
+
+upstream_dependencies:
+  - artifact_type: PCR
+    condition: "frozen"
+  - artifact_type: CLA
+    condition: "recommended"
+
+downstream_consumers:
+  - artifact_type: ACF
+    kit: EEK

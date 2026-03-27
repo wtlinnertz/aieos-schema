@@ -1,0 +1,70 @@
+# SMR — System Model Record
+# Kit: PINFK (Platform & Infrastructure Kit), Layer 12
+# Source: aieos-platform-infrastructure-kit/docs/specs/smr-spec.md
+
+artifact_type: SMR
+kit: PINFK
+layer: 12
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "ISPEC frozen — infrastructure baseline known and system topology can be documented"
+  - "New version issued when system topology changes (service added, removed, or dependency changed)"
+
+upstream_dependencies:
+  - artifact_type: ISPEC
+    condition: "frozen — provides infrastructure baseline"
+  - artifact_type: PDR
+    condition: "informational — provides technology decision context"
+  - artifact_type: EM
+    condition: "informational — provides environment definitions"
+
+hard_gates:
+  - name: entity_inventory
+    rule: "Every service and component has a name, type, version, owner, and criticality classification (critical/standard/auxiliary). No service is listed without all required fields."
+    fail_examples:
+      - "Service listed without type"
+      - "Service listed without owner"
+      - "Known service omitted from inventory"
+
+  - name: relationship_completeness
+    rule: "Every inter-service dependency is documented with direction, type (synchronous/asynchronous/data/configuration), criticality (critical/degraded/optional), and protocol. No known dependency is omitted. Critical dependencies have fallback notation."
+    fail_examples:
+      - "Dependency listed without type or protocol"
+      - "Critical dependency without fallback notation"
+
+  - name: environment_mapping
+    rule: "Every environment from the EM is represented. Every service deployment is mapped to its environment with version and deployment method."
+    fail_examples:
+      - "Environment from EM missing from the map"
+      - "Service deployed but not listed in the environment"
+
+  - name: version_tracking
+    rule: "The artifact version matrix covers all services across all environments. Version drift is flagged. Deployment dates are present."
+    fail_examples:
+      - "Matrix incomplete (missing services or environments)"
+      - "Version drift not flagged"
+      - "No deployment dates"
+
+  - name: dependency_direction
+    rule: "All dependency edges are directed (From -> To). Synchronous dependency cycles are identified as findings. External dependencies are included."
+    fail_examples:
+      - "Undirected dependency edges"
+      - "Synchronous circular dependencies not flagged"
+      - "External dependencies omitted"
+
+required_sections:
+  - name: Document Control
+  - name: Service Inventory
+  - name: Dependency Graph
+  - name: Environment Deployment Map
+  - name: Artifact Version Matrix
+  - name: Health Status Summary
+
+file_paths:
+  spec: docs/specs/smr-spec.md
+  template: docs/artifacts/smr-template.md
+  prompt: docs/prompts/smr-prompt.md
+  validator: docs/validators/smr-validator.md

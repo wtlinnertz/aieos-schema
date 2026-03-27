@@ -1,0 +1,79 @@
+# INR — Investigation Record
+# Kit: ODK (Operational Diagnostics Kit), Layer 8
+# Source: aieos-operational-diagnostics-kit/docs/specs/inr-spec.md
+
+artifact_type: INR
+kit: ODK
+layer: 8
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "DCR frozen and validated for an incident requiring structured diagnosis"
+
+upstream_dependencies:
+  - artifact_type: DCR
+    condition: "frozen"
+  - artifact_type: SRP
+    condition: "optional — from RRK, for SLO context and known failure modes"
+  - artifact_type: SAD
+    condition: "optional — from EEK, for service dependency context"
+
+downstream_consumers:
+  - artifact_type: PMR
+    kit: ODK
+
+hard_gates:
+  - name: context_reference
+    rule: "DCR ID present and confirmed Frozen; service and environment restated"
+    fail_examples:
+      - "DCR ID missing or 'see incident ticket'"
+      - "DCR status listed as 'Validated' rather than 'Frozen'"
+
+  - name: hypothesis_register
+    rule: "At least one hypothesis with hypothesis statement, evidence required, evidence found (or 'not yet gathered'), and status from enumerated list (Active | Confirmed | Refuted | Superseded)"
+    fail_examples:
+      - "No hypotheses present"
+      - "Hypotheses listed without evidence fields"
+
+  - name: diagnostic_trail
+    rule: "At least two diagnostic steps in chronological order; each step has timestamp with date and time, action taken, and substantive finding"
+    fail_examples:
+      - "Steps not in chronological order"
+      - "Fewer than two steps"
+      - "'Checked logs' without specifying what was found"
+
+  - name: probable_cause
+    rule: "Probable cause stated with evidence reference, OR 'Undetermined' stated with reasoning; section not blank"
+    fail_examples:
+      - "Probable cause section blank"
+      - "'Unknown' with no explanation"
+
+  - name: immediate_actions
+    rule: "Actions taken to restore service documented; restoration confirmed with verification method, OR current non-restored status explicitly stated"
+    fail_examples:
+      - "Immediate actions section blank"
+      - "'Restarted the service' without confirmation of restoration"
+
+  - name: open_questions
+    rule: "Open questions captured with specific statements, OR 'None' stated explicitly; section not blank"
+    fail_examples:
+      - "Section blank"
+      - "'None' when the Diagnostic Trail shows unresolved hypotheses"
+
+required_sections:
+  - name: Document Control
+  - name: Context Reference
+  - name: Hypothesis Register
+  - name: Diagnostic Trail
+  - name: Probable Cause
+  - name: Immediate Actions
+  - name: Open Questions
+  - name: Freeze Declaration
+
+file_paths:
+  spec: docs/specs/inr-spec.md
+  template: docs/artifacts/inr-template.md
+  prompt: docs/prompts/inr-prompt.md
+  validator: docs/validators/inr-validator.md

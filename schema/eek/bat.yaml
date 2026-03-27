@@ -1,0 +1,54 @@
+# Schema for BAT (EEK — Layer 4)
+artifact_type: BAT
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: capability_fidelity
+    rule: "Business capability restated verbatim from WDD; not paraphrased or expanded"
+  - name: precondition_completeness
+    rule: "Work group gate, environment, and required test state listed"
+  - name: criterion_coverage
+    rule: "Exactly one verification step per group-level acceptance criterion; no more, no fewer"
+  - name: step_executability
+    rule: "Actions are specific and unambiguous; executable without implementation knowledge; expected outcomes are user-visible"
+  - name: result_completeness
+    rule: "Every protocol step has an outcome (PASS/FAIL/BLOCKED); overall outcome consistent with step results"
+  - name: evidence_present
+    rule: "Document control fields populated; evidence section populated; decision declared with named approver"
+
+required_sections:
+  - name: "Business Capability"
+    required: true
+  - name: "Preconditions"
+    required: true
+  - name: "Verification Steps"
+    required: true
+  - name: "Rollback and Cleanup"
+    required: true
+  - name: "Document Control (Results)"
+    required: true
+  - name: "Step Results"
+    required: true
+  - name: "Overall Outcome"
+    required: true
+  - name: "Evidence"
+    required: true
+  - name: "Decision"
+    required: true
+
+file_paths:
+  spec: "docs/specs/bat-spec.md"
+  template: "docs/artifacts/bat-template.md"
+  prompt: "docs/prompts/bat-prompt.md"
+  validator: "docs/validators/bat-validator.md"
+
+upstream_dependencies:
+  - artifact_type: WDD
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: ORD
+    kit: EEK

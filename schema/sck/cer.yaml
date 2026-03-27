@@ -1,0 +1,66 @@
+# CER — Compliance Evidence Record
+# Kit: SCK (Security & Compliance Kit), Layer 10
+# Source: aieos-security-compliance-kit/docs/specs/cer-spec.md
+
+artifact_type: CER
+kit: SCK
+layer: 10
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "Compliance mandate identified — can be generated at any time, independent of the delivery pipeline"
+
+upstream_dependencies:
+  - artifact_type: TM
+    condition: "optional — if available, provides supporting evidence"
+  - artifact_type: SAR
+    condition: "optional — if available, provides supporting evidence"
+  - artifact_type: DAR
+    condition: "optional — if available, provides supporting evidence"
+
+principles_files:
+  - "compliance-principles.md"
+
+hard_gates:
+  - name: mandate_coverage
+    rule: "All identified regulatory requirements have mapping entries with compliance status and evidence references; no requirement is left unmapped; 'not applicable' entries include justification"
+    fail_examples:
+      - "Regulatory requirements without mapping entries"
+      - "Compliance status 'compliant' without evidence references"
+      - "'Not applicable' without justification"
+
+  - name: evidence_completeness
+    rule: "Every requirement marked 'compliant' or 'partially compliant' has concrete, retrievable evidence (not assertions); every evidence reference in the mapping appears in the evidence index with location and timestamp"
+    fail_examples:
+      - "Evidence is an assertion ('we comply with this requirement')"
+      - "Evidence cited in mapping but not in index"
+
+  - name: gap_assessment
+    rule: "Every 'partially compliant' or 'non-compliant' requirement has a gap entry with description, remediation plan, owner, and target date; if no gaps exist, this is explicitly stated"
+    fail_examples:
+      - "Partially compliant requirements without gap entries"
+      - "Gaps without remediation plans"
+      - "Remediation plans without owners or target dates"
+
+  - name: audit_trail
+    rule: "Every evidence index entry has evidence ID (E-NNN), description, type, retrievable location, and timestamp; no evidence is 'available upon request' or has a vague location; the evidence chain from requirement to evidence to location is traceable"
+    fail_examples:
+      - "Evidence entries without location"
+      - "Location is vague ('in our systems')"
+      - "Evidence entries without timestamp"
+
+required_sections:
+  - name: Document Control
+  - name: Regulatory Scope
+  - name: Requirement-to-Evidence Mapping
+  - name: Gap Assessment
+  - name: Evidence Index
+  - name: Compliance Verdict
+
+file_paths:
+  spec: docs/specs/cer-spec.md
+  template: docs/artifacts/cer-template.md
+  prompt: docs/prompts/cer-prompt.md
+  validator: docs/validators/cer-validator.md

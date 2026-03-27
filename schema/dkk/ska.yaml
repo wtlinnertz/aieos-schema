@@ -1,0 +1,65 @@
+# SKA — Support Knowledge Article
+# Kit: DKK (Documentation & Knowledge Kit), Layer 13
+# Source: aieos-documentation-knowledge-kit/docs/specs/ska-spec.md
+
+artifact_type: SKA
+kit: DKK
+layer: 13
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "RR frozen in REK — new capabilities requiring support articles"
+  - "PMR frozen in ODK — incident learnings to translate into support knowledge"
+  - "On-demand for recurring support issues"
+
+upstream_dependencies:
+  - artifact_type: RR
+    condition: "optional — from REK, provides release context"
+  - artifact_type: PMR
+    condition: "optional — from ODK, provides incident findings"
+
+principles_files:
+  - "documentation-principles.md"
+
+hard_gates:
+  - name: problem_statement_clear
+    rule: "Problem described from the user's perspective, not implementation perspective; symptoms, conditions, and impact stated"
+    fail_examples:
+      - "Problem described from implementation perspective ('The cache invalidation fails')"
+      - "Symptoms absent"
+      - "Impact absent"
+
+  - name: resolution_actionable
+    rule: "Resolution steps are specific, ordered, and executable by support staff without engineering escalation (unless escalation IS the resolution); each step has an observable outcome"
+    fail_examples:
+      - "Steps requiring engineering access for support staff"
+      - "Steps without observable outcomes"
+      - "Escalation required but no escalation procedure documented"
+
+  - name: scope_bounded
+    rule: "Article addresses exactly one problem or closely related problem set; not a catch-all; affected version, users, and environment stated"
+    fail_examples:
+      - "Product version not stated"
+      - "Affected users not stated"
+
+  - name: traceability_present
+    rule: "Links to source artifact (RR, PMR, or ticket reference); known issue articles link to tracking item"
+    fail_examples:
+      - "Source reference absent"
+      - "Known issue without tracking item reference"
+
+required_sections:
+  - name: Document Control
+  - name: Problem Statement
+  - name: Affected Scope
+  - name: Resolution Steps
+  - name: Verification
+  - name: Source Traceability
+
+file_paths:
+  spec: docs/specs/ska-spec.md
+  template: docs/artifacts/ska-template.md
+  prompt: docs/prompts/ska-prompt.md
+  validator: docs/validators/ska-validator.md

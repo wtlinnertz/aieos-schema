@@ -1,0 +1,77 @@
+# DHR — Documentation Health Review
+# Kit: DKK (Documentation & Knowledge Kit), Layer 13
+# Source: aieos-documentation-knowledge-kit/docs/specs/dhr-spec.md
+
+artifact_type: DHR
+kit: DKK
+layer: 13
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "Periodic audit aligned with RRK health review cadence"
+  - "Triggered after a major release"
+
+upstream_dependencies:
+  - artifact_type: UDR
+    condition: "frozen — documentation corpus to audit"
+  - artifact_type: ARR
+    condition: "frozen — documentation corpus to audit"
+  - artifact_type: SKA
+    condition: "frozen — documentation corpus to audit"
+  - artifact_type: RR
+    condition: "current — from REK, what is currently released"
+  - artifact_type: SRP
+    condition: "optional — from RRK, what is currently running"
+
+principles_files:
+  - "documentation-principles.md"
+
+hard_gates:
+  - name: coverage_audit
+    rule: "Every released capability has corresponding documentation (UDR or ARR as applicable); gaps identified; coverage percentage stated"
+    fail_examples:
+      - "Released capabilities not enumerated"
+      - "No gap identification"
+      - "Coverage percentage absent"
+
+  - name: currency_check
+    rule: "No documentation older than the policy threshold without a reviewed-and-current confirmation; current vs. stale counts stated"
+    fail_examples:
+      - "Currency threshold not stated"
+      - "Documents not checked against threshold"
+
+  - name: accuracy_sampling
+    rule: "At least 3 documentation claims spot-checked against current system behavior; each spot-check has claim, source, observation, and verdict; discrepancies listed"
+    fail_examples:
+      - "Fewer than 3 spot-checks without justification"
+      - "Spot-checks without verdicts"
+
+  - name: retirement_review
+    rule: "Documentation for deprecated or removed features identified for archival or removal; each candidate has artifact ID, feature, reason, and recommendation; or explicitly stated as none"
+    fail_examples:
+      - "Retirement review absent"
+      - "Retirement candidates without reason"
+
+  - name: health_score_declared
+    rule: "Overall documentation health score (0-100) declared with methodology including coverage, currency, and accuracy dimensions with weights; score consistent with findings"
+    fail_examples:
+      - "Health score absent"
+      - "Score without methodology"
+      - "Score contradicts findings"
+
+required_sections:
+  - name: Document Control
+  - name: Review Scope
+  - name: Coverage Audit
+  - name: Currency Check
+  - name: Accuracy Sampling
+  - name: Retirement Review
+  - name: Health Score
+
+file_paths:
+  spec: docs/specs/dhr-spec.md
+  template: docs/artifacts/dhr-template.md
+  prompt: docs/prompts/dhr-prompt.md
+  validator: docs/validators/dhr-validator.md

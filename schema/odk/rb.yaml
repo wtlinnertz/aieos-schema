@@ -1,0 +1,70 @@
+# RB — Runbook
+# Kit: ODK (Operational Diagnostics Kit), Layer 8
+# Source: aieos-operational-diagnostics-kit/docs/specs/rb-spec.md
+
+artifact_type: RB
+kit: ODK
+layer: 8
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "PMR frozen and identifies a repeatable failure class with a documented resolution"
+
+upstream_dependencies:
+  - artifact_type: PMR
+    condition: "frozen"
+  - artifact_type: INR
+    condition: "optional — for detailed diagnostic steps"
+  - artifact_type: SRP
+    condition: "optional — from RRK, for SLO thresholds in trigger conditions"
+
+hard_gates:
+  - name: trigger_conditions
+    rule: "At least two specific, observable trigger conditions; each references a specific metric, alert, or observable state; no vague triggers"
+    fail_examples:
+      - "Fewer than two trigger conditions"
+      - "Conditions stated vaguely ('high error rate' without threshold)"
+
+  - name: resolution_steps
+    rule: "At least three numbered steps; each step is specific and actionable with expected outcome; commands shown where applicable"
+    fail_examples:
+      - "Fewer than three steps"
+      - "Steps stated vaguely ('restart the service') without specifics"
+      - "Steps with no expected outcome"
+
+  - name: verification
+    rule: "At least one step confirming resolution with an observable criterion (specific metric value, alert resolution, or manual check result)"
+    fail_examples:
+      - "Verification section blank"
+      - "'Monitor for a while' without criterion"
+
+  - name: escalation_conditions
+    rule: "At least one specific, observable escalation condition with escalation target identified"
+    fail_examples:
+      - "'If it doesn't work, escalate' — no observable criterion"
+      - "Escalation target not identified"
+
+  - name: evidence_grounded
+    rule: "At least one INR or PMR referenced by artifact ID in Evidence Grounding with a note on what the runbook draws from it"
+    fail_examples:
+      - "Reference to past incidents without artifact IDs"
+      - "No connection between runbook content and specific artifacts"
+
+required_sections:
+  - name: Document Control
+  - name: Failure Class
+  - name: Trigger Conditions
+  - name: Pre-Conditions
+  - name: Resolution Steps
+  - name: Verification
+  - name: Escalation Conditions
+  - name: Evidence Grounding
+  - name: Version History
+
+file_paths:
+  spec: docs/specs/rb-spec.md
+  template: docs/artifacts/rb-template.md
+  prompt: docs/prompts/rb-prompt.md
+  validator: docs/validators/rb-validator.md

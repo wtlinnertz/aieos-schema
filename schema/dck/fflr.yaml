@@ -1,0 +1,69 @@
+# FFLR — Feature Flag Lifecycle Record
+# Kit: DCK (Data & Configuration Kit), Layer 11
+# Source: aieos-data-configuration-kit/docs/specs/fflr-spec.md
+
+artifact_type: FFLR
+kit: DCK
+layer: 11
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "Feature flags created during REK for progressive delivery"
+  - "Re-frozen at each RHR cycle or when a flag is retired"
+
+upstream_dependencies:
+  - artifact_type: RR
+    condition: "frozen — from REK, provides feature flag states at release time"
+  - artifact_type: RP
+    condition: "frozen — from REK, provides flag-based exposure strategy"
+
+hard_gates:
+  - name: flag_inventory
+    rule: "All active flags listed with flag key, purpose, type (release | ops | experiment | permission), creation date, and creator; retired flags listed with retirement date; no duplicate keys"
+    fail_examples:
+      - "Flag listed without type classification"
+      - "Type not from the enumerated list"
+      - "Duplicate flag keys"
+
+  - name: state_tracking
+    rule: "Current state per environment documented for every active flag; state uses enumerated values (enabled | disabled | percentage | not deployed); every target environment covered"
+    fail_examples:
+      - "Flag with no state for one or more environments"
+      - "State described qualitatively ('mostly enabled')"
+
+  - name: retirement_criteria
+    rule: "Every flag has a defined retirement condition and target date; conditions are specific and evaluable; permanent flags have review date with justification"
+    fail_examples:
+      - "Flag without retirement condition"
+      - "Retirement condition stated as 'when ready' or 'TBD'"
+      - "Permanent flag without justification or review date"
+
+  - name: rollout_history
+    rule: "Every state change logged with timestamp, who, what changed, and rationale; initial creation is first entry; entries in chronological order"
+    fail_examples:
+      - "State change without timestamp"
+      - "State change without rationale"
+      - "Missing initial creation entry"
+
+  - name: stale_flag_assessment
+    rule: "Flags past retirement date identified as stale; each stale flag has delay reason and updated target date or escalation; assessment date matches Document Control; section present even if no stale flags"
+    fail_examples:
+      - "Flag past retirement date not identified as stale"
+      - "Stale flag without reason for delay"
+      - "Section absent entirely"
+
+required_sections:
+  - name: Document Control
+  - name: Flag Inventory
+  - name: State Tracking
+  - name: Retirement Criteria
+  - name: Rollout History
+  - name: Stale Flag Assessment
+
+file_paths:
+  spec: docs/specs/fflr-spec.md
+  template: docs/artifacts/fflr-template.md
+  prompt: docs/prompts/fflr-prompt.md
+  validator: docs/validators/fflr-validator.md

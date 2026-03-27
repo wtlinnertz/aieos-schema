@@ -1,0 +1,50 @@
+# Schema for SBR (SDK — Layer 1)
+artifact_type: SBR
+kit: SDK
+layer: 1
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: thesis_falsifiable
+    rule: "§2 contains a single falsifiable thesis in the required form; it can be proven wrong by observable evidence"
+  - name: success_signal_measurable
+    rule: "§3 references a specific, observable metric with a target threshold or direction"
+  - name: failure_signal_defined
+    rule: "§4 defines a measurable condition that would cause the bet to be abandoned — not blank, not N/A, not the inverse of the success signal"
+  - name: time_horizon_bounded
+    rule: "§5 states a specific bounded duration — not open-ended"
+  - name: investment_envelope_stated
+    rule: "§6 states approximate resource scope — not 'as needed' or unbounded"
+  - name: single_accountable_owner
+    rule: "§1 Executive Sponsor names one individual — not a committee, not a team, not a vacant role"
+
+required_sections:
+  - name: "§1 Document Control"
+    required: true
+  - name: "§2 Thesis"
+    required: true
+  - name: "§3 Success Signal"
+    required: true
+  - name: "§4 Failure Signal"
+    required: true
+  - name: "§5 Time Horizon"
+    required: true
+  - name: "§6 Investment Envelope"
+    required: true
+  - name: "§7 Strategic Context"
+    required: true
+  - name: "§8 Expiration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/sbr-spec.md"
+  template: "docs/artifacts/sbr-template.md"
+  prompt: "docs/prompts/sbr-prompt.md"
+  validator: "docs/validators/sbr-validator.md"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: PPR
+    kit: SDK

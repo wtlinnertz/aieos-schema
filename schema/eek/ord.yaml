@@ -1,0 +1,66 @@
+# Schema for ORD (EEK — Layer 4)
+artifact_type: ORD
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: deployment_verification
+    rule: "Every TDD §5 step has a verification item with concrete evidence"
+  - name: observability_verification
+    rule: "Every TDD §7 / ACF §6 requirement has a verification item with evidence"
+  - name: alerting_verification
+    rule: "Every DCF §5 expectation has a verification item with evidence"
+  - name: failure_handling_verification
+    rule: "Every TDD §6 failure mode has verification evidence; rollback tested"
+  - name: security_verification
+    rule: "Every ACF §3 guardrail has verification evidence; review triggers addressed"
+  - name: runbook_verification
+    rule: "Procedures documented and tested per TDD §9"
+  - name: no_open_blockers
+    rule: "No open items blocking production"
+  - name: evidence_quality
+    rule: "All evidence is concrete, timestamped, traceable, and retrievable"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Scope"
+    required: true
+  - name: "Evidence Standards"
+    required: true
+  - name: "Deployment Verification"
+    required: true
+  - name: "Observability Verification"
+    required: true
+  - name: "Alerting and Monitoring"
+    required: true
+  - name: "Failure and Rollback Verification"
+    required: true
+  - name: "Security Verification"
+    required: true
+  - name: "Runbook Verification"
+    required: true
+  - name: "Open Items"
+    required: true
+  - name: "Readiness Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/ord-spec.md"
+  template: "docs/artifacts/ord-template.md"
+  prompt: "docs/prompts/ord-prompt.md"
+  validator: "docs/validators/ord-validator.md"
+
+upstream_dependencies:
+  - artifact_type: TDD
+    condition: "frozen"
+  - artifact_type: ACF
+    condition: "frozen"
+  - artifact_type: DCF
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: RER
+    kit: REK

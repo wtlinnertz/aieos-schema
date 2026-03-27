@@ -1,0 +1,48 @@
+# Schema for PES (IEK — Layer 7)
+artifact_type: PES
+kit: IEK
+layer: 7
+spec_version: "v1.1"
+entry_gate: false
+
+hard_gates:
+  - name: coverage_adequacy
+    rule: "The PES references at least 2 ERs as input; §2 Coverage Summary table has at least 2 rows; analysis period is stated in §1"
+  - name: inputs_frozen
+    rule: "Every ER cited in §1 is in Frozen, Active, or Deprecated status (not Draft or Abandoned-only); if individual ESes are cited, they are in Frozen status"
+  - name: patterns_evidence_based
+    rule: "§3, §4, and §5 pattern findings cite specific artifact IDs, ER section references, or quantified counts; general statements without citation or quantification do not satisfy this gate"
+  - name: synthesis_present
+    rule: "§6 is not blank; it either contains at least one improvement proposal row, or contains exactly the no-proposals statement followed by a rationale"
+  - name: proposals_complete
+    rule: "If §6 contains improvement proposals, each proposal row has all four required fields: Proposal ID, Affected File, Observed Pattern (§ citation), and Proposed Change; if §6 contains only the no-proposals statement, this gate auto-passes"
+
+required_sections:
+  - name: "§1 Document Control"
+    required: true
+  - name: "§2 Engagement Coverage Summary"
+    required: true
+  - name: "§3 Cross-Initiative VH Pattern Analysis"
+    required: true
+  - name: "§4 Cross-Initiative Reliability Patterns"
+    required: true
+  - name: "§5 Assumption Pattern Analysis"
+    required: true
+  - name: "§6 Improvement Proposals"
+    required: true
+  - name: "§7 Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/pes-spec.md"
+  template: "docs/artifacts/pes-template.md"
+  prompt: "docs/prompts/pes-prompt.md"
+  validator: "docs/validators/pes-validator.md"
+
+upstream_dependencies:
+  - artifact_type: ER
+    condition: "at least 2 frozen/active/deprecated"
+  - artifact_type: ES
+    condition: "frozen (optional)"
+
+downstream_consumers: []

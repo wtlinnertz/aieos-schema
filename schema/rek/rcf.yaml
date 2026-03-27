@@ -1,0 +1,50 @@
+# Schema for RCF (REK — Layer 5)
+artifact_type: RCF
+kit: REK
+layer: 5
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: document_control
+    rule: "RCF ID, owner (team or role), version, status, and applicability scope present"
+  - name: deployment_standards
+    rule: "Permitted strategies enumerated; verification requirements per strategy; risk tiers defined with criteria; permitted strategies per tier specified"
+  - name: exposure_standards
+    rule: "Progressive delivery requirements by risk tier; maximum increment defined; minimum observation period defined as a duration; flag governance rules (lifecycle, cleanup, simultaneous limit)"
+  - name: authorization_model
+    rule: "Authorization levels with specific thresholds; escalation triggers; emergency procedure; cross-boundary procedure"
+  - name: communication_requirements
+    rule: "Internal notification (who, when, form); customer-facing triggers; partner/API requirements stated"
+  - name: monitoring_requirements
+    rule: "Minimum watch period as duration; required metric categories (at least 3); alert threshold policy; SLO baseline documentation requirement"
+  - name: standard_enforceability
+    rule: "All standards are specific enough to evaluate compliance; no aspirational language ('should,' 'ideally,' 'as appropriate')"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Deployment Standards"
+    required: true
+  - name: "Exposure Standards"
+    required: true
+  - name: "Release Authorization Model"
+    required: true
+  - name: "Communication Requirements"
+    required: true
+  - name: "Monitoring Requirements"
+    required: true
+  - name: "Scope and Exceptions"
+    required: true
+
+file_paths:
+  spec: "docs/specs/rcf-spec.md"
+  template: "docs/artifacts/rcf-template.md"
+  prompt: "docs/prompts/rcf-prompt.md"
+  validator: "docs/validators/rcf-validator.md"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: RP
+    kit: REK

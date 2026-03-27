@@ -1,0 +1,72 @@
+# QAER — Quality Assurance Entry Record
+# Kit: QAK (Quality Assurance Kit), Layer 9
+# Source: aieos-quality-assurance-kit/docs/specs/qaer-spec.md
+
+artifact_type: QAER
+kit: QAK
+layer: 9
+spec_version: "v1.0"
+entry_gate: true
+cross_cutting: true
+
+trigger_conditions:
+  - "ORD frozen in EEK; initiative entering quality assurance gate between EEK and REK"
+
+upstream_dependencies:
+  - artifact_type: ORD
+    condition: "frozen"
+  - artifact_type: SAD
+    condition: "frozen — for integration point identification"
+  - artifact_type: TDD
+    condition: "frozen — for test strategy baseline"
+
+downstream_consumers:
+  - artifact_type: VP
+    kit: QAK
+
+hard_gates:
+  - name: document_control
+    rule: "QAER ID, date, and initiative summary present"
+    fail_examples:
+      - "Missing QAER ID"
+      - "Initiative summary absent or 'TBD'"
+
+  - name: upstream_reference
+    rule: "ORD ID referenced; ORD status confirmed as Frozen; SAD, TDD, ACF, WDD listed with IDs and confirmed as Frozen"
+    fail_examples:
+      - "ORD ID missing or 'unknown'"
+      - "ORD status listed as 'Validated' rather than 'Frozen'"
+
+  - name: qa_owner
+    rule: "Named individual (not team) as QA owner with contact information and scope stated"
+    fail_examples:
+      - "'QA team' — not a named individual"
+      - "Contact information absent"
+      - "Scope absent or 'all testing'"
+
+  - name: test_infrastructure
+    rule: "At least one test environment listed with readiness status; test data availability addressed; test tooling listed"
+    fail_examples:
+      - "Environment list empty or 'will be set up later'"
+      - "Readiness status absent"
+
+  - name: integration_points
+    rule: "Integration points extracted from SAD with components, interface types, and verification concerns identified; SAD references cited; or explicit 'none' with justification"
+    fail_examples:
+      - "Integration points section empty without justification"
+      - "Integration points listed without SAD reference"
+
+required_sections:
+  - name: Document Control
+  - name: Upstream Reference
+  - name: QA Owner
+  - name: Test Infrastructure Confirmation
+  - name: Integration Points
+  - name: Completeness Checklist
+  - name: Freeze Declaration
+
+file_paths:
+  spec: docs/specs/qaer-spec.md
+  template: docs/artifacts/qaer-template.md
+  prompt: null
+  validator: docs/validators/qaer-validator.md

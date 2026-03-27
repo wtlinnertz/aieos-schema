@@ -1,0 +1,48 @@
+# Schema for PPR (SDK — Layer 1)
+artifact_type: PPR
+kit: SDK
+layer: 1
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: strict_rank_order
+    rule: "§3 is a strict total order — no ties, no tiers; every SBR in §2 appears exactly once"
+  - name: trade_off_rationale_present
+    rule: "§4 provides a rationale for every adjacent pair in the ranking"
+  - name: cut_line_explicit
+    rule: "§6 identifies the exact cut line position; below-the-line bets are deferred, not ambiguous"
+  - name: capacity_not_exceeded
+    rule: "§5 capacity assignments for above-the-line bets do not exceed stated total capacity"
+  - name: review_trigger_defined
+    rule: "§7 defines at least one non-calendar-only trigger for re-prioritization"
+
+required_sections:
+  - name: "§1 Document Control"
+    required: true
+  - name: "§2 Active Bet Inventory"
+    required: true
+  - name: "§3 Ranked Bet List"
+    required: true
+  - name: "§4 Trade-Off Rationale"
+    required: true
+  - name: "§5 Capacity Allocation"
+    required: true
+  - name: "§6 Cut Line"
+    required: true
+  - name: "§7 Review Trigger"
+    required: true
+
+file_paths:
+  spec: "docs/specs/ppr-spec.md"
+  template: "docs/artifacts/ppr-template.md"
+  prompt: "docs/prompts/ppr-prompt.md"
+  validator: "docs/validators/ppr-validator.md"
+
+upstream_dependencies:
+  - artifact_type: SBR
+    condition: "at least 2 frozen"
+
+downstream_consumers:
+  - artifact_type: DI
+    kit: PIK

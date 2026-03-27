@@ -1,0 +1,56 @@
+# Schema for PFD (PIK — Layer 2)
+artifact_type: PFD
+kit: PIK
+layer: 2
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: problem_definition
+    rule: "Clear problem statement with identified users and 'why now' rationale"
+  - name: user_landscape
+    rule: "At least one user group identified with description and impact"
+  - name: pain_points
+    rule: "At least one pain point documented with frequency and concrete impact"
+  - name: opportunity
+    rule: "Opportunity sizing present with stated basis"
+  - name: current_state
+    rule: "Current state described (existing solutions, workarounds, or absence thereof)"
+  - name: no_solutions
+    rule: "No solution proposals, architecture, or implementation details present"
+
+required_sections:
+  - name: "1. Document Control"
+    required: true
+  - name: "2. Problem Statement"
+    required: true
+  - name: "3. User Landscape"
+    required: true
+  - name: "4. Pain Points and Impact"
+    required: true
+  - name: "5. Opportunity Sizing"
+    required: true
+  - name: "6. Strategic Alignment"
+    required: true
+  - name: "7. Current State"
+    required: true
+  - name: "8. Constraints and Boundaries"
+    required: true
+  - name: "9. Open Questions"
+    required: true
+  - name: "10. Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/problem-framing-spec.md"
+  template: "docs/artifacts/problem-framing-template.md"
+  prompt: "docs/prompts/problem-framing-prompt.md"
+  validator: "docs/validators/problem-framing-validator.md"
+
+upstream_dependencies:
+  - artifact_type: DI
+    condition: "completed"
+
+downstream_consumers:
+  - artifact_type: VH
+    kit: PIK

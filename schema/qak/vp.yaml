@@ -1,0 +1,73 @@
+# VP — Verification Plan
+# Kit: QAK (Quality Assurance Kit), Layer 9
+# Source: aieos-quality-assurance-kit/docs/specs/vp-spec.md
+
+artifact_type: VP
+kit: QAK
+layer: 9
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "QAER frozen; initiative requires integration, system, performance, and security verification beyond unit tests"
+
+upstream_dependencies:
+  - artifact_type: QAER
+    condition: "frozen"
+  - artifact_type: SAD
+    condition: "frozen — integration points and component boundaries"
+  - artifact_type: TDD
+    condition: "frozen — test strategy and unit test coverage baseline"
+  - artifact_type: ACF
+    condition: "frozen — performance, security, and compliance constraints"
+  - artifact_type: WDD
+    condition: "frozen — work items for traceability"
+  - artifact_type: TM
+    condition: "optional — from SCK, informs security test scenarios"
+  - artifact_type: SAR
+    condition: "optional — from SCK, informs security verification scope"
+
+downstream_consumers:
+  - artifact_type: TCR
+    kit: QAK
+
+hard_gates:
+  - name: test_scope_coverage
+    rule: "All four standard test categories (integration, system, performance, security) addressed or explicitly excluded with justification; all QAER integration points addressed in integration test scope"
+    fail_examples:
+      - "Test category missing without justification"
+      - "QAER integration point not addressed in integration scope"
+
+  - name: traceability
+    rule: "Traceability matrix present; every QAER integration point has at least one test; every test traces to at least one upstream requirement (WDD, SAD, or ACF)"
+    fail_examples:
+      - "Tests listed without upstream references"
+      - "QAER integration points with no corresponding tests"
+
+  - name: environment_specification
+    rule: "At least one test environment specified with configuration details, data requirements, and isolation level for each included test category"
+    fail_examples:
+      - "Environment not specified for a test category"
+      - "Configuration details absent"
+
+  - name: acceptance_criteria
+    rule: "Measurable pass/fail criteria present for each included test category; criteria are objective and specific (numeric thresholds where applicable)"
+    fail_examples:
+      - "'All tests pass' without specifying what tests"
+      - "Qualitative criteria ('good performance', 'secure enough')"
+
+required_sections:
+  - name: Document Control
+  - name: Test Scope
+  - name: Traceability Matrix
+  - name: Test Environments
+  - name: Acceptance Criteria
+  - name: Risks and Assumptions
+  - name: Completeness Checklist
+
+file_paths:
+  spec: docs/specs/vp-spec.md
+  template: docs/artifacts/vp-template.md
+  prompt: docs/prompts/vp-prompt.md
+  validator: docs/validators/vp-validator.md

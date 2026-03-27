@@ -1,0 +1,68 @@
+# Schema for TDD (EEK — Layer 4)
+artifact_type: TDD
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: intent_alignment
+    rule: "Intent Summary present and consistent with SAD; no expansion"
+  - name: scope
+    rule: "Scope explicitly defined; non-goals restated; no violations"
+  - name: interfaces
+    rule: "Interfaces explicitly defined with inputs, outputs, and error modes; cross-boundary interfaces are stub-ready"
+  - name: build_deploy
+    rule: "Build and deployment steps defined and deterministic"
+  - name: failure_handling
+    rule: "Failure modes defined with rollback/compensation behavior"
+  - name: testing
+    rule: "Test types defined with pass/fail criteria; at least one failure test"
+  - name: readiness
+    rule: "No unresolved decisions; design is deterministic"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Intent Summary"
+    required: true
+  - name: "Scope and Non-Goals"
+    required: true
+  - name: "Technical Overview"
+    required: true
+  - name: "Interfaces and Contracts"
+    required: true
+  - name: "Build and Deployment Approach"
+    required: true
+  - name: "Failure Handling and Rollback"
+    required: true
+  - name: "Observability"
+    required: true
+  - name: "Testing Strategy"
+    required: true
+  - name: "Operational Notes"
+    required: true
+  - name: "Dependencies"
+    required: true
+  - name: "Risks and Assumptions"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/tdd-spec.md"
+  template: "docs/artifacts/tdd-template.md"
+  prompt: "docs/prompts/tdd-prompt.md"
+  validator: "docs/validators/tdd-validator.md"
+
+upstream_dependencies:
+  - artifact_type: SAD
+    condition: "frozen"
+  - artifact_type: DCF
+    condition: "frozen"
+  - artifact_type: DKR
+    condition: "frozen (optional)"
+
+downstream_consumers:
+  - artifact_type: WDD
+    kit: EEK

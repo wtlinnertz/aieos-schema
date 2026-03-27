@@ -1,0 +1,64 @@
+# Schema for ACF (EEK — Layer 4)
+artifact_type: ACF
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: document_control
+    rule: "ACF ID, owner, status, and applicability scope present"
+  - name: purpose
+    rule: "Purpose describes guardrails, not solutions"
+  - name: platform_assumptions
+    rule: "Runtime, deployment, networking, and identity stated"
+  - name: security_guardrails
+    rule: "At least one guardrail defined as constraint (not solution); dependency vulnerability posture and cryptography constraints explicitly addressed"
+  - name: compliance
+    rule: "Compliance constraints listed or 'None applicable' with justification"
+  - name: reliability
+    rule: "Availability, failure isolation, and rollback expectations stated"
+  - name: observability
+    rule: "Required telemetry types and minimum signals defined"
+  - name: forbidden_patterns
+    rule: "At least one clear, enforceable forbidden pattern"
+  - name: constraint_enforceability
+    rule: "All hard constraints testable, no aspirational language"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Purpose"
+    required: true
+  - name: "Platform Assumptions (High Level)"
+    required: true
+  - name: "Security Guardrails (Hard)"
+    required: true
+  - name: "Compliance / Regulatory Constraints (Hard)"
+    required: true
+  - name: "Reliability & Resilience Guardrails (Hard)"
+    required: true
+  - name: "Observability Guardrails (Hard)"
+    required: true
+  - name: "Approved Architectural Patterns"
+    required: true
+  - name: "Forbidden Patterns (Hard)"
+    required: true
+  - name: "Standard Interfaces / Integrations"
+    required: false
+  - name: "Open Items"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/acf-spec.md"
+  template: "docs/artifacts/acf-template.md"
+  prompt: "docs/prompts/acf-prompt.md"
+  validator: "docs/validators/acf-validator.md"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: SAD
+    kit: EEK

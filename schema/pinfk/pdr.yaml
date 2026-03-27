@@ -1,0 +1,75 @@
+# PDR — Platform Decision Record
+# Kit: PINFK (Platform & Infrastructure Kit), Layer 12
+# Source: aieos-platform-infrastructure-kit/docs/specs/pdr-spec.md
+
+artifact_type: PDR
+kit: PINFK
+layer: 12
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "A technology or infrastructure decision must be made and recorded — early in an initiative or whenever a platform choice is needed"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: ISPEC
+    kit: PINFK
+  - artifact_type: ACF
+    kit: EEK
+
+hard_gates:
+  - name: decision_statement
+    rule: "A clear, specific, non-conditional decision is stated; the statement is unambiguous"
+    fail_examples:
+      - "Decision statement absent"
+      - "Statement is vague ('We will use a modern database')"
+      - "Statement is conditional ('We will use PostgreSQL unless performance testing shows otherwise')"
+
+  - name: context_documented
+    rule: "The problem, constraint, or opportunity that prompted the decision is documented; constraints are listed"
+    fail_examples:
+      - "Context section absent or empty"
+      - "No constraints listed"
+
+  - name: alternatives_assessed
+    rule: "At least 2 alternatives are documented, each with pros and cons; the chosen alternative is identified"
+    fail_examples:
+      - "Fewer than 2 alternatives listed"
+      - "Alternatives listed without pros/cons"
+      - "Chosen alternative not identified"
+
+  - name: tradeoffs_stated
+    rule: "At least one explicit tradeoff is stated with specificity; tradeoffs frame what was consciously accepted, not just cons restated"
+    fail_examples:
+      - "Tradeoffs section absent"
+      - "Tradeoffs are vague ('some additional complexity')"
+
+  - name: decision_authority
+    rule: "A named individual is identified as the decision maker (not a team or committee)"
+    fail_examples:
+      - "Decision authority listed as a team name ('Platform Team')"
+
+  - name: reversibility_assessment
+    rule: "Cost and feasibility of reversal are documented; classification is stated with basis (easily reversible / reversible with moderate effort / difficult to reverse / practically irreversible); mitigation strategy present if difficult to reverse or practically irreversible"
+    fail_examples:
+      - "Assessment states 'reversible' without basis or cost estimate"
+      - "Difficult-to-reverse decision documented without mitigation strategy"
+
+required_sections:
+  - name: Document Control
+  - name: Decision Statement
+  - name: Context
+  - name: Alternatives Considered
+  - name: Decision Rationale
+  - name: Tradeoffs
+  - name: Reversibility Assessment
+  - name: Consequences
+
+file_paths:
+  spec: docs/specs/pdr-spec.md
+  template: docs/artifacts/pdr-template.md
+  prompt: docs/prompts/pdr-prompt.md
+  validator: docs/validators/pdr-validator.md

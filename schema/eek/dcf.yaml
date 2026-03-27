@@ -1,0 +1,60 @@
+# Schema for DCF (EEK — Layer 4)
+artifact_type: DCF
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: document_control
+    rule: "DCF ID, owner, status, and applicability scope present"
+  - name: purpose
+    rule: "Purpose describes design standards, not specific designs"
+  - name: design_principles
+    rule: "At least one actionable principle (not aspirational)"
+  - name: quality_bars
+    rule: "At least one measurable/verifiable quality bar"
+  - name: non_goals_enforcement
+    rule: "Concrete, enforceable rules preventing scope expansion"
+  - name: operational_expectations
+    rule: "Deployment, monitoring, and auditability expectations stated"
+  - name: testing_expectations
+    rule: "Test layers, evidence requirements, and promotion gates defined"
+  - name: documentation_expectations
+    rule: "Required TDD sections, diagrams, and traceability markers listed"
+  - name: standard_enforceability
+    rule: "All hard standards testable, no aspirational language"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Purpose"
+    required: true
+  - name: "Design Principles (Hard)"
+    required: true
+  - name: "Quality Bars (Hard)"
+    required: true
+  - name: "Non-Goals Enforcement (Hard)"
+    required: true
+  - name: "Operational Expectations (Hard)"
+    required: true
+  - name: "Testing Expectations (Hard)"
+    required: true
+  - name: "Documentation Expectations (Hard)"
+    required: true
+  - name: "Open Items"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/dcf-spec.md"
+  template: "docs/artifacts/dcf-template.md"
+  prompt: "docs/prompts/dcf-prompt.md"
+  validator: "docs/validators/dcf-validator.md"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: TDD
+    kit: EEK

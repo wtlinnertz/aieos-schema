@@ -1,0 +1,61 @@
+# RC — Readiness Confirmation
+# Kit: BPK (Business Process Kit), Layer 15
+# Source: aieos-business-process-kit/docs/specs/rc-spec.md
+
+artifact_type: RC
+kit: BPK
+layer: 15
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "TP frozen and training, communication, and SOP updates have been executed; completed before or parallel with REK entry"
+
+upstream_dependencies:
+  - artifact_type: TP
+    condition: "frozen"
+  - artifact_type: PIA
+    condition: "frozen"
+
+principles_files:
+  - "business-process-principles.md"
+
+hard_gates:
+  - name: training_evidence
+    rule: "Every role with training requirements in TP §4 has evidence in §2: completion date, completion rate, and evidence reference. No role with training requirements lacks evidence."
+    fail_examples:
+      - "Role with training requirements but no evidence"
+      - "Completion rate below 100% without gap explanation"
+
+  - name: sop_update_evidence
+    rule: "Every Modified or Added process has an SOP entry in §3 with status and confirmation. 'Not Applicable' entries have justification."
+    fail_examples:
+      - "Modified process without SOP entry"
+      - "'Not Applicable' without justification"
+
+  - name: stakeholder_acknowledgment
+    rule: "Every process owner from PIA §2 has an acknowledgment entry in §4 with date, method, and reference. No process owner is unacknowledged."
+    fail_examples:
+      - "Process owner without acknowledgment entry"
+      - "Acknowledgment without date or method"
+
+  - name: open_items
+    rule: "All open items in §5 have an owner, resolution plan, and target date. Blocking items prevent a 'Ready' declaration. If no open items exist, 'No open items' is stated explicitly."
+    fail_examples:
+      - "Open item without owner or resolution plan"
+      - "Blocking items present but declaration is 'Ready'"
+
+required_sections:
+  - name: Document Control
+  - name: Training Completion Evidence
+  - name: SOP Status
+  - name: Stakeholder Acknowledgment Log
+  - name: Open Items
+  - name: Readiness Declaration
+
+file_paths:
+  spec: docs/specs/rc-spec.md
+  template: docs/artifacts/rc-template.md
+  prompt: docs/prompts/rc-prompt.md
+  validator: docs/validators/rc-validator.md

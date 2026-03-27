@@ -1,0 +1,143 @@
+# AIEOS Meta-Schema v1.0
+#
+# Defines the format for all artifact spec schemas in the AIEOS framework.
+# Every schema file in this repository must conform to this meta-schema.
+#
+# Purpose: Machine-readable contracts that enable downstream ecosystem
+# projects (Evaluation Engine, Analytics, Compliance Reporter, Agent Harness)
+# to consume spec definitions programmatically.
+
+schema_version: "1.0"
+
+# Required fields for every artifact schema
+required_fields:
+  - artifact_type    # Uppercase code: PRD, SAD, TDD, etc.
+  - kit              # Kit abbreviation: EEK, PIK, SSK, etc.
+  - layer            # Layer number: 1-15
+  - spec_version     # Spec file version: v1.0, v1.1, etc.
+  - hard_gates       # List of hard gate definitions
+  - required_sections # Template section inventory
+  - file_paths       # Paths to spec/template/prompt/validator
+
+# Optional fields
+optional_fields:
+  - upstream_dependencies   # Artifacts required before generation
+  - downstream_consumers    # Artifacts that consume this one
+  - entry_gate              # Boolean: true if human-authored (no prompt)
+  - cross_cutting           # Boolean: true if triggered, not sequential
+  - trigger_conditions      # When this artifact is produced (for cross-cutting)
+  - principles_files        # Principles files referenced by the prompt
+
+# Field type definitions
+field_types:
+  artifact_type:
+    type: string
+    pattern: "^[A-Z]{2,6}$"
+    description: "Uppercase artifact type code"
+
+  kit:
+    type: string
+    enum: [SDK, PIK, SSK, EEK, REK, RRK, IEK, ODK, QAK, SCK, DCK, PINFK, DKK, PRK, BPK]
+    description: "Kit abbreviation"
+
+  layer:
+    type: integer
+    minimum: 1
+    maximum: 15
+
+  spec_version:
+    type: string
+    pattern: "^v\\d+\\.\\d+$"
+
+  hard_gates:
+    type: list
+    items:
+      type: object
+      required: [name, rule]
+      properties:
+        name:
+          type: string
+          pattern: "^[a-z][a-z0-9_]*$"
+          description: "snake_case gate name matching validator gate"
+        rule:
+          type: string
+          description: "Human-readable rule — what must be true for PASS"
+        fail_examples:
+          type: list
+          items:
+            type: string
+          description: "What causes FAIL (optional but recommended)"
+
+  required_sections:
+    type: list
+    items:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: "Section heading as it appears in the template"
+        required:
+          type: boolean
+          default: true
+
+  file_paths:
+    type: object
+    required: [spec, template, validator]
+    properties:
+      spec:
+        type: string
+        description: "Relative path from kit root"
+      template:
+        type: string
+      prompt:
+        type: string
+        nullable: true
+        description: "null for entry gates (human-authored)"
+      validator:
+        type: string
+
+  upstream_dependencies:
+    type: list
+    items:
+      type: object
+      required: [artifact_type]
+      properties:
+        artifact_type:
+          type: string
+        condition:
+          type: string
+          description: "e.g., 'frozen', 'Path A only', 'optional'"
+
+  downstream_consumers:
+    type: list
+    items:
+      type: object
+      required: [artifact_type, kit]
+      properties:
+        artifact_type:
+          type: string
+        kit:
+          type: string
+
+  entry_gate:
+    type: boolean
+    default: false
+    description: "True if human-authored with no generation prompt"
+
+  cross_cutting:
+    type: boolean
+    default: false
+    description: "True if triggered rather than sequential"
+
+  trigger_conditions:
+    type: list
+    items:
+      type: string
+    description: "When this artifact is produced (for cross-cutting kits)"
+
+  principles_files:
+    type: list
+    items:
+      type: string
+    description: "Principles files referenced during generation"

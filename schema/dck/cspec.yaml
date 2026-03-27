@@ -1,0 +1,66 @@
+# CSPEC — Configuration Specification
+# Kit: DCK (Data & Configuration Kit), Layer 11
+# Source: aieos-data-configuration-kit/docs/specs/cspec-spec.md
+
+artifact_type: CSPEC
+kit: DCK
+layer: 11
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "TDD frozen in EEK — system configuration requirements are known"
+
+upstream_dependencies:
+  - artifact_type: TDD
+    condition: "frozen — provides configuration requirements and data models"
+  - artifact_type: ORD
+    condition: "frozen — provides config readiness checks"
+
+hard_gates:
+  - name: config_inventory
+    rule: "All configuration items identified with name, type, default (or required statement), description, and validation rule reference; items traceable to TDD; no duplicates"
+    fail_examples:
+      - "Configuration item listed without type"
+      - "Default value absent with no 'required, no default' statement"
+      - "Duplicate configuration item names"
+
+  - name: environment_coverage
+    rule: "Every target environment listed; every configuration item has defined value or explicit inheritance for every environment; no undefined gaps without resolution plan"
+    fail_examples:
+      - "Environment listed with only partial configuration coverage"
+      - "'TBD' without a resolution plan and target date"
+
+  - name: secret_identification
+    rule: "All secrets identified with handling method (storage, access control, rotation policy); no plaintext defaults for secrets; section present even if no secrets exist"
+    fail_examples:
+      - "Secret identified but handling method absent"
+      - "Secret with a plaintext default value"
+      - "Database connection string not identified as a secret"
+
+  - name: validation_rules
+    rule: "Every configuration item has a validation rule (type check, range, enum, or pattern); rules are specific enough to be machine-evaluable"
+    fail_examples:
+      - "Configuration item with no corresponding validation rule"
+      - "Validation rule stated as 'must be valid' without specifics"
+
+  - name: change_impact
+    rule: "Every configuration item classified as hot-reload, restart required, or redeployment required; no unclassified items without documented resolution plan"
+    fail_examples:
+      - "Change impact not classified for one or more items"
+      - "Blanket statement like 'all configuration changes require restart'"
+
+required_sections:
+  - name: Document Control
+  - name: Configuration Inventory
+  - name: Environment Coverage
+  - name: Secret Identification
+  - name: Validation Rules
+  - name: Change Impact
+
+file_paths:
+  spec: docs/specs/cspec-spec.md
+  template: docs/artifacts/cspec-template.md
+  prompt: docs/prompts/cspec-prompt.md
+  validator: docs/validators/cspec-validator.md

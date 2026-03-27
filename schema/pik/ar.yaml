@@ -1,0 +1,54 @@
+# Schema for AR (PIK — Layer 2)
+artifact_type: AR
+kit: PIK
+layer: 2
+spec_version: "v1.1"
+entry_gate: false
+
+hard_gates:
+  - name: assumption_inventory
+    rule: "At least three assumptions documented with complete structure (statement, source, category, risk level, impact if false, evidence, validation method, origin)"
+  - name: source_traceability
+    rule: "Every assumption traces to specific content in the frozen PFD or VH"
+  - name: risk_assessment
+    rule: "All assumptions have risk levels; risk assessment summary is present"
+  - name: high_risk_validation
+    rule: "Every high-risk assumption has a concrete validation plan entry"
+  - name: no_scope_expansion
+    rule: "No expansion beyond the problem space and hypotheses defined in upstream artifacts"
+  - name: no_solutions
+    rule: "No solution proposals, architecture, or implementation details present"
+
+required_sections:
+  - name: "1. Document Control"
+    required: true
+  - name: "2. Upstream References"
+    required: true
+  - name: "3. Assumption Inventory"
+    required: true
+  - name: "4. Risk Assessment Summary"
+    required: true
+  - name: "5. Validation Plan"
+    required: true
+  - name: "6. Dependency Map"
+    required: true
+  - name: "7. Open Questions"
+    required: true
+  - name: "8. Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/assumption-register-spec.md"
+  template: "docs/artifacts/assumption-register-template.md"
+  prompt: "docs/prompts/assumption-register-prompt.md"
+  validator: "docs/validators/assumption-register-validator.md"
+
+upstream_dependencies:
+  - artifact_type: PFD
+    condition: "frozen"
+  - artifact_type: VH
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: EL
+    kit: PIK

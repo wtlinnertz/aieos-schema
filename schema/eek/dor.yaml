@@ -1,0 +1,66 @@
+# Schema for DoR (EEK — Layer 4)
+artifact_type: DOR
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: traceability
+    rule: "References WDD Item ID and TDD section"
+  - name: atomic_scope
+    rule: "One clear outcome, no compound objectives"
+  - name: acceptance_criteria
+    rule: "Correct format for assignee type, failure conditions present"
+  - name: inputs_outputs
+    rule: "Inputs and outputs explicitly listed, no hidden dependencies"
+  - name: definition_of_done
+    rule: "PR merged, tests passing (type specified), evidence generated"
+  - name: dependencies
+    rule: "Explicitly listed or 'None'"
+  - name: execution_ownership
+    rule: "Assignee Type set (AI Agent | Human | Either)"
+  - name: ai_safety
+    rule: "No open-ended language, no unresolved decisions, no undocumented assumptions"
+  - name: granularity
+    rule: "Single outcome, single repo, single PR, no cross-environment"
+  - name: rollback_behavior
+    rule: "Failure behavior defined, rollback approach stated, not TBD"
+
+required_sections:
+  - name: "Traceability"
+    required: true
+  - name: "Atomic Scope"
+    required: true
+  - name: "Acceptance Criteria"
+    required: true
+  - name: "Inputs and Outputs"
+    required: true
+  - name: "Definition of Done"
+    required: true
+  - name: "Dependencies"
+    required: true
+  - name: "Execution Ownership"
+    required: true
+  - name: "AI Safety"
+    required: true
+  - name: "Granularity Enforcement"
+    required: true
+  - name: "Rollback / Failure Behavior"
+    required: true
+
+file_paths:
+  spec: "docs/specs/dor-spec.md"
+  template: "docs/artifacts/dor-template.md"
+  prompt: "docs/prompts/dor-prompt.md"
+  validator: "docs/validators/dor-validator.md"
+
+upstream_dependencies:
+  - artifact_type: WDD
+    condition: "frozen or validated"
+  - artifact_type: TDD
+    condition: "frozen"
+  - artifact_type: DCF
+    condition: "frozen"
+
+downstream_consumers: []

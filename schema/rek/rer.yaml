@@ -1,0 +1,50 @@
+# Schema for RER (REK — Layer 5)
+artifact_type: RER
+kit: REK
+layer: 5
+spec_version: "v1.0"
+entry_gate: true
+
+hard_gates:
+  - name: document_control
+    rule: "Record ID, date, and release summary present"
+  - name: upstream_reference
+    rule: "ORD ID referenced; ORD status confirmed as Frozen"
+  - name: release_scope
+    rule: "What is being released declared; release type selected from enumerated list; initial exposure target stated"
+  - name: release_owner
+    rule: "Named individual as release owner with authorization level stated"
+  - name: priority_confirmed
+    rule: "Release authorization confirmed with a traceable reference; not inferred from ORD approval or sprint events"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Upstream Verification"
+    required: true
+  - name: "Release Scope"
+    required: true
+  - name: "Release Owner"
+    required: true
+  - name: "Priority Confirmation"
+    required: true
+  - name: "Completeness Checklist"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/release-entry-spec.md"
+  template: "docs/artifacts/release-entry-template.md"
+  prompt: null
+  validator: "docs/validators/release-entry-validator.md"
+
+upstream_dependencies:
+  - artifact_type: ORD
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: RCF
+    kit: REK
+  - artifact_type: RSA
+    kit: REK

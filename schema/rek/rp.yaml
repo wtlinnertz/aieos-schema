@@ -1,0 +1,60 @@
+# Schema for RP (REK — Layer 5)
+artifact_type: RP
+kit: REK
+layer: 5
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: upstream_references
+    rule: "RP ID, ORD ID (Frozen status confirmed), RCF ID (Frozen status confirmed), release summary all present"
+  - name: deployment_specification
+    rule: "Strategy from RCF-permitted list; concrete deterministic steps with ORD runbook references; verification steps after each major step; configuration changes listed"
+  - name: exposure_specification
+    rule: "At least two stages (or justified exception); each stage has target, proceed trigger as observable signal with threshold, and hold action; RCF increment and observation period complied with; flag configuration per stage stated"
+  - name: rollback_specification
+    rule: "At least two conditions as observable signals with thresholds; procedure references ORD §8 rollback; named responsible party; decision authority and time window specified"
+  - name: communication_plan
+    rule: "All RCF-required audiences covered with content, timing, channel, owner; customer notification addressed (or explicitly exempted with trigger reference)"
+  - name: monitoring_plan
+    rule: "Named metrics (not categories); baseline values; alert thresholds per RCF policy; watch period as duration meeting RCF minimum; check-in schedule; success criteria"
+  - name: scope_bounded
+    rule: "RP scope matches RER declaration; no expansion beyond what the RER states"
+  - name: readiness
+    rule: "Open Issues section present; no issues marked 'Blocks Release?'; plan is deterministic (no remaining design decisions)"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Deployment Specification"
+    required: true
+  - name: "Exposure Specification"
+    required: true
+  - name: "Rollback Specification"
+    required: true
+  - name: "Communication Plan"
+    required: true
+  - name: "Post-Release Monitoring Plan"
+    required: true
+  - name: "Open Issues"
+    required: true
+  - name: "Pre-Release Authorization Checklist"
+    required: true
+
+file_paths:
+  spec: "docs/specs/rp-spec.md"
+  template: "docs/artifacts/rp-template.md"
+  prompt: "docs/prompts/rp-prompt.md"
+  validator: "docs/validators/rp-validator.md"
+
+upstream_dependencies:
+  - artifact_type: ORD
+    condition: "frozen"
+  - artifact_type: RCF
+    condition: "frozen"
+  - artifact_type: RSA
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: RR
+    kit: REK

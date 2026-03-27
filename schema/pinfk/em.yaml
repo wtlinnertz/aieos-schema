@@ -1,0 +1,77 @@
+# EM — Environment Matrix
+# Kit: PINFK (Platform & Infrastructure Kit), Layer 12
+# Source: aieos-platform-infrastructure-kit/docs/specs/em-spec.md
+
+artifact_type: EM
+kit: PINFK
+layer: 12
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "ISPEC frozen — infrastructure baseline known; environment definitions needed for downstream kits"
+  - "New version issued when environments are added/removed, promotion rules change, or parity requirements shift"
+
+upstream_dependencies:
+  - artifact_type: ISPEC
+    condition: "frozen — provides resource baseline"
+  - artifact_type: PDR
+    condition: "frozen — provides technology choices affecting environment design"
+
+downstream_consumers:
+  - artifact_type: RP
+    kit: REK
+  - artifact_type: SRP
+    kit: RRK
+  - artifact_type: SMR
+    kit: PINFK
+
+hard_gates:
+  - name: environment_inventory
+    rule: "All environments listed with name, purpose, owner, and access endpoint; at least 2 environments present including one production environment"
+    fail_examples:
+      - "Fewer than 2 environments listed"
+      - "Production environment missing"
+      - "Environment listed without purpose"
+
+  - name: promotion_rules
+    rule: "Promotion path documented; each step has source/target, automated/manual designation, gates, authorization, and rollback procedure; emergency path documented"
+    fail_examples:
+      - "No promotion path documented"
+      - "Promotion steps without gates"
+      - "No rollback procedure"
+
+  - name: parity_assessment
+    rule: "Differences between adjacent environments documented with justification for each; identical aspects confirmed; no unjustified parity gaps"
+    fail_examples:
+      - "Parity assessment absent"
+      - "Differences listed without justification"
+      - "'Staging is similar to production' without specific comparison"
+
+  - name: access_control
+    rule: "Access documented for every environment by role with permission level; access grant/revoke process stated; production has most restrictive controls (or justified exception)"
+    fail_examples:
+      - "Access control absent for any environment"
+      - "Production has the same access as development without justification"
+
+  - name: data_management
+    rule: "Data source, masking requirements (if applicable), refresh cadence, and retention policy documented per environment; test data strategy documented"
+    fail_examples:
+      - "Production data used in non-production without masking requirements"
+      - "No data refresh cadence"
+      - "No test data strategy"
+
+required_sections:
+  - name: Document Control
+  - name: Environment Inventory
+  - name: Promotion Rules
+  - name: Parity Assessment
+  - name: Access Control
+  - name: Data Management
+
+file_paths:
+  spec: docs/specs/em-spec.md
+  template: docs/artifacts/em-template.md
+  prompt: docs/prompts/em-prompt.md
+  validator: docs/validators/em-validator.md

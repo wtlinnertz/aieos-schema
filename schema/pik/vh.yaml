@@ -1,0 +1,56 @@
+# Schema for VH (PIK — Layer 2)
+artifact_type: VH
+kit: PIK
+layer: 2
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: hypothesis_present
+    rule: "At least one value hypothesis exists with complete structure (belief, users, outcome, evidence, falsification)"
+  - name: falsifiable
+    rule: "Every hypothesis has explicit falsification criteria that are specific and testable"
+  - name: user_traceability
+    rule: "All target users reference PFD user group identifiers; no new user groups introduced"
+  - name: no_scope_expansion
+    rule: "No expansion of the problem space beyond what the PFD defines"
+  - name: no_solutions
+    rule: "No solution proposals, architecture, or implementation details present"
+  - name: metrics_defined
+    rule: "At least one measurable success metric exists per hypothesis"
+
+required_sections:
+  - name: "1. Document Control"
+    required: true
+  - name: "2. Problem Summary"
+    required: true
+  - name: "3. Target Users"
+    required: true
+  - name: "4. Value Hypotheses"
+    required: true
+  - name: "5. Hypothesis Prioritization"
+    required: true
+  - name: "6. Success Metrics"
+    required: true
+  - name: "7. Falsification Criteria"
+    required: true
+  - name: "8. Dependencies and Risks"
+    required: true
+  - name: "9. Open Questions"
+    required: true
+  - name: "10. Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/value-hypothesis-spec.md"
+  template: "docs/artifacts/value-hypothesis-template.md"
+  prompt: "docs/prompts/value-hypothesis-prompt.md"
+  validator: "docs/validators/value-hypothesis-validator.md"
+
+upstream_dependencies:
+  - artifact_type: PFD
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: AR
+    kit: PIK

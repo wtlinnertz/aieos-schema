@@ -1,0 +1,74 @@
+# TP — Transition Plan
+# Kit: BPK (Business Process Kit), Layer 15
+# Source: aieos-business-process-kit/docs/specs/tp-spec.md
+
+artifact_type: TP
+kit: BPK
+layer: 15
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "PIA frozen and contains at least one process classified as Added, Modified, or Removed"
+
+upstream_dependencies:
+  - artifact_type: PIA
+    condition: "frozen"
+  - artifact_type: SAD
+    condition: "recommended — for system context"
+  - artifact_type: TDD
+    condition: "recommended — for behavioral detail"
+
+downstream_consumers:
+  - artifact_type: RC
+    kit: BPK
+
+principles_files:
+  - "business-process-principles.md"
+
+hard_gates:
+  - name: transition_strategy
+    rule: "Every process classified as Added, Modified, or Removed in the PIA has a strategy declared in §2 (Cutover/Parallel Run/Phased Rollout). No process lacks a strategy. Parallel runs have explicit end dates and measurable exit criteria."
+    fail_examples:
+      - "Process from PIA without a strategy"
+      - "Parallel run without explicit end date"
+      - "Parallel run without measurable exit criteria"
+
+  - name: communication_plan
+    rule: "Every affected role from PIA §5 has at least one communication action in §3 with medium, timing, and responsible party. No role is unaddressed."
+    fail_examples:
+      - "Affected role without communication action"
+      - "Communication action without timing"
+
+  - name: training_plan
+    rule: "Every role that gains or changes responsibilities has training identified in §4 with format, timeline, and measurable completion criteria. No role with changed responsibilities lacks a training entry."
+    fail_examples:
+      - "Role with changed responsibilities but no training entry"
+      - "'Attended training' as sole completion criteria (not measurable)"
+
+  - name: rollback_process
+    rule: "For each Modified or Removed process, a rollback path is defined in §6. For Added processes, a remove-and-revert plan is defined. Processes that cannot roll back have explicit constraint justification."
+    fail_examples:
+      - "Modified process without rollback path"
+      - "Irreversible change without explicit justification"
+
+  - name: timeline_completeness
+    rule: "All communication, training, and cutover activities in §3-§5 have target dates. No date is 'TBD' without a resolution plan and resolution date."
+    fail_examples:
+      - "Activity without target date"
+      - "'TBD' date without resolution plan"
+
+required_sections:
+  - name: Document Control
+  - name: Transition Strategy
+  - name: Communication Plan
+  - name: Training Plan
+  - name: Cutover Schedule
+  - name: Rollback Procedures
+
+file_paths:
+  spec: docs/specs/tp-spec.md
+  template: docs/artifacts/tp-template.md
+  prompt: docs/prompts/tp-prompt.md
+  validator: docs/validators/tp-validator.md

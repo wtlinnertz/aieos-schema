@@ -1,0 +1,84 @@
+# Schema for SAD (EEK — Layer 4)
+artifact_type: SAD
+kit: EEK
+layer: 4
+spec_version: "v1.1"
+entry_gate: false
+
+hard_gates:
+  - name: intent_integrity
+    rule: "Intent Summary is consistent with PRD; no scope expansion"
+  - name: scope_discipline
+    rule: "In Scope and Non-Goals sections are substantive and concrete"
+  - name: upstream_traceability
+    rule: "PRD, ACF, and ADR references are present and traceable"
+  - name: structural_diagrams
+    rule: "All three required diagrams are present, valid Mermaid, and describe structure (not execution)"
+  - name: cross_cutting_concerns
+    rule: "Security, Reliability, Observability, and Performance sections have architectural content"
+  - name: data_integration
+    rule: "Data stores have ownership; integration patterns are architectural; data flows include state transitions"
+  - name: failure_modes
+    rule: "Failure modes table is complete; mitigations are architectural"
+  - name: quality_attributes
+    rule: "QAS scenarios are concrete and testable; responses describe architectural behavior"
+  - name: deferred_decisions
+    rule: "Each deferred decision has reason and target resolution phase"
+  - name: risk_awareness
+    rule: "Risks identified with impact and architectural mitigation"
+  - name: guardrail_alignment
+    rule: "ACF alignment explicit; exceptions justified with ADRs"
+  - name: implementation_leakage
+    rule: "No code blocks, configs, or procedural step-by-step flows"
+  - name: layer_assignment
+    rule: "Every major component assigned to Domain, Application, or Infrastructure layer; dependency direction rule declared (inward-only); no domain components with infrastructure dependencies"
+  - name: integration_contracts
+    rule: "Every cross-service integration point has an explicit interface contract: expected inputs, expected outputs, error modes, and versioning strategy; no integration point referenced without a defined contract"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Intent Summary"
+    required: true
+  - name: "Scope and Non-Goals"
+    required: true
+  - name: "System Context (Black Box)"
+    required: true
+  - name: "High-Level Architecture (White Box)"
+    required: true
+  - name: "Key Architectural Decisions"
+    required: true
+  - name: "Cross-Cutting Concerns"
+    required: true
+  - name: "Data and Integration"
+    required: true
+  - name: "Failure Modes and Recovery"
+    required: true
+  - name: "Quality Attribute Scenarios"
+    required: true
+  - name: "Constraints and Guardrails"
+    required: true
+  - name: "Deferred Decisions"
+    required: true
+  - name: "Risks and Assumptions"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/sad-spec.md"
+  template: "docs/artifacts/sad-template.md"
+  prompt: "docs/prompts/sad-prompt.md"
+  validator: "docs/validators/sad-validator.md"
+
+upstream_dependencies:
+  - artifact_type: PRD
+    condition: "frozen"
+  - artifact_type: ACF
+    condition: "frozen"
+  - artifact_type: DKR
+    condition: "frozen (optional)"
+
+downstream_consumers:
+  - artifact_type: TDD
+    kit: EEK

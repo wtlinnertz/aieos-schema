@@ -1,0 +1,56 @@
+# Schema for SDR (SSK — Layer 3)
+artifact_type: SDR
+kit: SSK
+layer: 3
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: decision_stated
+    rule: "A clear, specific, non-conditional sourcing decision is stated as Build, Buy {named vendor/product}, or Adopt {named project}; the statement is unambiguous"
+  - name: rationale_references_ver
+    rule: "Decision rationale references specific VER evaluation data (criterion scores, cost model, risk assessment, capability fit, integration complexity); every criterion where the selected option did not score highest is addressed; no evaluation data introduced that is not present in the VER"
+  - name: downstream_routing_defined
+    rule: "EEK entry path is specified for the selected decision type; scope reduction defined for Buy/Adopt; requirements partitioned between vendor/project-provided and EEK development; additional EEK inputs identified"
+  - name: risk_mitigations
+    rule: "Every VER risk for the selected option has a mitigation plan with approach, owner, and timeline; decision-type-specific risks addressed (vendor viability for Buy, project sustainability for Adopt, development risks for Build); residual risks documented"
+  - name: stakeholder_sign_off
+    rule: "At least one stakeholder has signed off with name, role, and date; budget-authorized signatory present if budget implications exist; procurement acknowledgment present for Buy decisions (or justified absence); dissenting views documented"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Decision Statement"
+    required: true
+  - name: "Decision Rationale"
+    required: true
+  - name: "Tradeoffs Accepted"
+    required: true
+  - name: "Risk Mitigations"
+    required: true
+  - name: "Downstream Routing"
+    required: true
+  - name: "Stakeholder Sign-off"
+    required: true
+  - name: "Completeness Checklist"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/sdr-spec.md"
+  template: "docs/artifacts/sdr-template.md"
+  prompt: "docs/prompts/sdr-prompt.md"
+  validator: "docs/validators/sdr-validator.md"
+
+upstream_dependencies:
+  - artifact_type: VER
+    condition: "frozen"
+  - artifact_type: SOER
+    condition: "frozen"
+  - artifact_type: DPRD
+    condition: "frozen"
+
+downstream_consumers:
+  - artifact_type: KER
+    kit: EEK

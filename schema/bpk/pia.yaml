@@ -1,0 +1,72 @@
+# PIA — Process Impact Assessment
+# Kit: BPK (Business Process Kit), Layer 15
+# Source: aieos-business-process-kit/docs/specs/pia-spec.md
+
+artifact_type: PIA
+kit: BPK
+layer: 15
+spec_version: "v1.0"
+entry_gate: false
+cross_cutting: true
+
+trigger_conditions:
+  - "SAD or TDD frozen in EEK and the solution introduces changes that affect business processes, user workflows, or operational procedures"
+
+upstream_dependencies:
+  - artifact_type: SAD
+    condition: "frozen — at least one of SAD or TDD required"
+  - artifact_type: TDD
+    condition: "frozen — at least one of SAD or TDD required"
+  - artifact_type: DPRD
+    condition: "recommended — from PIK, provides user context"
+
+downstream_consumers:
+  - artifact_type: TP
+    kit: BPK
+
+principles_files:
+  - "business-process-principles.md"
+
+hard_gates:
+  - name: process_inventory
+    rule: "Every affected business process is listed in §2 with process owner, frequency, and current description. No process referenced in §3-§5 is absent from §2."
+    fail_examples:
+      - "Process mentioned in impact classification but absent from inventory"
+      - "Process listed without owner or frequency"
+
+  - name: impact_classification
+    rule: "Every process in §2 has a classification in §3: Added, Modified, Removed, or Unchanged-Dependent. No process is unclassified."
+    fail_examples:
+      - "Process in inventory with no classification"
+
+  - name: role_mapping
+    rule: "Every affected process has at least one role identified in §4 (who performs it today, who performs it after the change). Roles are teams or job functions, not individuals."
+    fail_examples:
+      - "Process without any role identified"
+      - "Roles listed as individual names"
+
+  - name: change_scope
+    rule: "For each Modified or Removed process: specific changed steps are identified in §4. For each Added process: full workflow steps are defined. No 'TBD' entries without a resolution plan and target date."
+    fail_examples:
+      - "Modified process without specific changed steps"
+      - "Added process without workflow steps"
+      - "'TBD' without resolution plan"
+
+  - name: upstream_traceability
+    rule: "Every impact classification in §3 cites a specific SAD component or TDD design decision. No impact is asserted without a source reference."
+    fail_examples:
+      - "Impact classification without SAD/TDD source reference"
+
+required_sections:
+  - name: Document Control
+  - name: Process Inventory
+  - name: Impact Classification
+  - name: Impact Detail
+  - name: Role Impact Summary
+  - name: Risk and Mitigation
+
+file_paths:
+  spec: docs/specs/pia-spec.md
+  template: docs/artifacts/pia-template.md
+  prompt: docs/prompts/pia-prompt.md
+  validator: docs/validators/pia-validator.md

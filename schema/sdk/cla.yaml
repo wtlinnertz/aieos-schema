@@ -1,0 +1,46 @@
+# Schema for CLA (SDK — Layer 1)
+artifact_type: CLA
+kit: SDK
+layer: 1
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: capability_inventory
+    rule: "§2 lists every known capability with owner and description; gaps are acknowledged with justification, not silently omitted"
+  - name: user_provided_inventory
+    rule: "§2 capability inventory originates from user/operator input, not AI inference; the raw capability list traces to human knowledge"
+  - name: lifecycle_decision
+    rule: "Every capability in §2 has exactly one lifecycle decision: invest, maintain, sunset, or retire — no blanks, no TBD, no multiple decisions"
+  - name: signal_basis
+    rule: "Every lifecycle decision cites specific evidence: IEK ES signal, RRK RHR pattern, usage data, market signal, or team/stakeholder input with attribution; vague 'initial assessment' without specifics FAILS"
+  - name: sunset_plans
+    rule: "Every capability marked sunset or retire in §2 has a corresponding plan in §3 with: timeline (bounded), migration path (or explicit no replacement with justification), affected users listed, communication plan reference"
+  - name: no_orphans
+    rule: "No capability in §2 without an identified owner — person or team name, not TBD, not Unknown, not blank"
+
+required_sections:
+  - name: "§1 Document Control"
+    required: true
+  - name: "§2 Capability Inventory"
+    required: true
+  - name: "§3 Sunset Plans"
+    required: true
+  - name: "§4 Capacity Implications"
+    required: true
+  - name: "§5 Roadmap Inputs"
+    required: true
+
+file_paths:
+  spec: "docs/specs/cla-spec.md"
+  template: "docs/artifacts/cla-template.md"
+  prompt: "docs/prompts/cla-prompt.md"
+  validator: "docs/validators/cla-validator.md"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: PCR
+    kit: SDK
+  - artifact_type: TIR
+    kit: SDK

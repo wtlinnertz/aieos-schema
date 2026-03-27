@@ -1,0 +1,56 @@
+# Schema for DKR (EEK — Layer 4)
+artifact_type: DKR
+kit: EEK
+layer: 4
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: document_control
+    rule: "DKR ID, owner, status, and applicability scope present"
+  - name: ubiquitous_language
+    rule: "At least 5 terms with precise, unambiguous definitions; no circular definitions; synonyms-to-avoid listed"
+  - name: entities_complete
+    rule: "Every entity referenced in §4–§6 is defined in §3; no orphan references"
+  - name: relationships_explicit
+    rule: "Every entity in §3 with connections has relationships in §4; type and cardinality stated"
+  - name: rules_enforceable
+    rule: "Every rule in §5 specific enough to validate in a test; no aspirational language; enforcement point stated"
+  - name: workflows_traceable
+    rule: "Every workflow in §6 references only entities and rules from §3–§5; no implementation steps"
+  - name: bounded_context_defined
+    rule: "§7 states in-scope and out-of-scope; adjacent domain interfaces identified with interaction type"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Ubiquitous Language"
+    required: true
+  - name: "Domain Entities"
+    required: true
+  - name: "Entity Relationships"
+    required: true
+  - name: "Domain Rules"
+    required: true
+  - name: "Workflows"
+    required: true
+  - name: "Bounded Contexts"
+    required: true
+
+file_paths:
+  spec: "docs/specs/dkr-spec.md"
+  template: "docs/artifacts/dkr-template.md"
+  prompt: "docs/prompts/dkr-prompt.md"
+  validator: "docs/validators/dkr-validator.md"
+
+upstream_dependencies:
+  - artifact_type: ACF
+    condition: "recommended"
+  - artifact_type: PRD
+    condition: "recommended"
+
+downstream_consumers:
+  - artifact_type: SAD
+    kit: EEK
+  - artifact_type: TDD
+    kit: EEK

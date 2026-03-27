@@ -1,0 +1,70 @@
+# DCR — Diagnostic Context Record
+# Kit: ODK (Operational Diagnostics Kit), Layer 8
+# Source: aieos-operational-diagnostics-kit/docs/specs/dcr-spec.md
+
+artifact_type: DCR
+kit: ODK
+layer: 8
+spec_version: "v1.0"
+entry_gate: true
+cross_cutting: true
+
+trigger_conditions:
+  - "SEV1/2 incident declared (mandatory) or operator judgment for lower severity"
+
+upstream_dependencies:
+  - artifact_type: SRP
+    condition: "optional — from RRK, for SLO baseline and known failure modes"
+  - artifact_type: RR
+    condition: "optional — from REK §7, for recent changes and deployment state"
+
+downstream_consumers:
+  - artifact_type: INR
+    kit: ODK
+
+hard_gates:
+  - name: service_identification
+    rule: "Service named; environment declared (from enumerated list: production | staging | development | multi-environment); incident owner named (individual, not team)"
+    fail_examples:
+      - "'Backend services' — not a specific service name"
+      - "Environment absent or 'unknown'"
+      - "'Platform team' as incident owner — not a named individual"
+
+  - name: symptom_description
+    rule: "At least one specific symptom described with measurable/observable characteristic; incident start time present with date and time"
+    fail_examples:
+      - "'Service is degraded' — too generic"
+      - "Start time present as date only (no time)"
+
+  - name: scope_bounded
+    rule: "Impact scope declared from enumerated list (all users / subset described / internal only / unknown); if subset, subset described"
+    fail_examples:
+      - "Scope field blank"
+      - "'Many users' without defining the subset"
+
+  - name: evidence_documented
+    rule: "At least one observable signal documented with source (alert name, metric with value, user report with specifics, or engineer observation with specifics)"
+    fail_examples:
+      - "'Got an alert' — no alert name"
+      - "'Users reported issues' — no specifics"
+
+  - name: recent_changes_documented
+    rule: "Changes in last 72h documented, OR 'No changes in last 72h' stated explicitly; 'unknown' without resolution action fails"
+    fail_examples:
+      - "Recent changes section blank"
+      - "'No changes' without the explicit 'in last 72h' qualifier"
+
+required_sections:
+  - name: Document Control
+  - name: Service Identification
+  - name: Symptom Description
+  - name: Scope and Impact
+  - name: Observable Signals
+  - name: Recent Changes
+  - name: Freeze Declaration
+
+file_paths:
+  spec: docs/specs/dcr-spec.md
+  template: docs/artifacts/dcr-template.md
+  prompt: null
+  validator: docs/validators/dcr-validator.md

@@ -1,0 +1,46 @@
+# Schema for WCR (PIK — Layer 2)
+artifact_type: WCR
+kit: PIK
+layer: 2
+spec_version: "v1.0"
+entry_gate: false
+
+hard_gates:
+  - name: document_control
+    rule: "Record ID, date, and work request summary present"
+  - name: type_declared
+    rule: "Primary type is exactly one value from the taxonomy; no composite or ambiguous types"
+  - name: routing_complete
+    rule: "Discovery depth and Route To destination are explicitly stated; no TBD values"
+  - name: justification_present
+    rule: "Justification explains the reasoning, not just restates the classification"
+  - name: risk_flags_addressed
+    rule: "Risk Flags section present with content or explicit 'None identified'"
+  - name: no_solution_content
+    rule: "No solution proposals, requirements, or implementation details anywhere in the record"
+
+required_sections:
+  - name: "Document Control"
+    required: true
+  - name: "Classification Decision"
+    required: true
+  - name: "Justification"
+    required: true
+  - name: "Artifact Requirements"
+    required: true
+  - name: "Risk Flags"
+    required: true
+  - name: "Freeze Declaration"
+    required: true
+
+file_paths:
+  spec: "docs/specs/work-classification-spec.md"
+  template: "docs/artifacts/work-classification-template.md"
+  prompt: "docs/prompts/work-classification-prompt.md"
+  validator: "docs/validators/work-classification-validator.md"
+
+upstream_dependencies: []
+
+downstream_consumers:
+  - artifact_type: DI
+    kit: PIK
