@@ -2,27 +2,27 @@
 
 Machine-readable YAML schema files for every governed artifact specification in the AIEOS framework. The keystone ecosystem project (ECO-001) that unlocks downstream projects: Evaluation Engine, System Twin, Governance Analytics, Compliance Reporter, and Agent Harness.
 
-## What It Captures
+## What it captures
 
 Each schema file represents one AIEOS spec and contains:
-- **Hard gates** — gate names, rules, and failure examples
-- **Required sections** — template section inventory
-- **File paths** — spec, template, prompt, validator locations
-- **Dependencies** — upstream artifacts required, downstream consumers
-- **Metadata** — artifact type, kit, layer, spec version, entry gate flag
+- Hard gates — names, rules, and failure examples
+- Required sections — template section inventory
+- File paths — spec, template, prompt, validator locations
+- Dependencies — upstream artifacts required, downstream consumers
+- Metadata — artifact type, kit, layer, spec version, entry gate flag
 
-## Quick Start
+## Quick start
 
 ```bash
 # Run validation tests
 pip install pyyaml pytest
 PYTHONPATH=. pytest tests/ -v
 
-# Extract a schema from a Markdown spec (starting point — needs manual review)
+# Extract a schema from a Markdown spec (starting point, needs manual review)
 python scripts/extract-schema.py path/to/spec.md --kit EEK --layer 4
 ```
 
-## Schema Format
+## Schema format
 
 Every schema conforms to `schema/meta-schema.yaml`. Example:
 
@@ -87,7 +87,7 @@ upstream_dependencies:
 - Artifact types are uppercase, kits are valid, layers in range
 - Gate names are snake_case with rules
 - Entry gates have no prompt path
-- All 15 kits represented, 55+ schemas exist, 300+ total gates
+- All 15 kits represented, 55+ schemas exist, 300+ gates total
 
 ## License
 
