@@ -1,0 +1,89 @@
+# AIEOS Canonical Document Control Block — v1.0
+#
+# FR-018: the single on-disk representation of an artifact's freeze status.
+# Every governed artifact instance carries this block in its "Document Control"
+# section. All drivers (sherpa, console, dark factory) and the harness read and
+# write ONLY this block; no sidecar (e.g. the console's .aieos/state.json) is a
+# source of truth — a sidecar demotes to a derived cache rebuilt by scanning
+# these blocks.
+#
+# This file is a peer of meta-schema.yaml (a top-level, cross-cutting schema),
+# not an artifact spec schema, so it is intentionally NOT swept by the per-kit
+# conformance tests. A dedicated conformance validator (follow-on Phase 1 step)
+# enforces artifact instances against this definition.
+#
+# References: ADR-0002 (apply_freeze_decision is the sole FROZEN writer),
+# ADR-0004 (HALTED/FAULTED andon-cord fault states), v1.3 release plan Phase 1.
+
+block_version: "1.0"
+section_name: "Document Control"
+
+# Freeze lifecycle and validation outcome are two ORTHOGONAL fields.
+# Splitting them avoids the console's original overloaded status enum
+# (validated-pass / validated-fail were freeze states there; here they are
+# a separate last_validation attribute).
+fields:
+  artifact_id:
+    type: string
+    required: true
+    description: "Canonical artifact identifier, e.g. SAD-NOTIFY-001. 'N/A' for id-less artifacts (e.g. Discovery Intake)."
+
+  owner:
+    type: string
+    required: true
+    description: "Accountable owner of the artifact."
+
+  freeze_status:
+    type: string
+    required: true
+    default: DRAFT
+    enum: [DRAFT, VALIDATED, FREEZE_PENDING, FROZEN, HALTED, FAULTED]
+    description: >
+      Freeze lifecycle. DRAFT, VALIDATED, FREEZE_PENDING, FROZEN are the harness
+      ArtifactStatus enum (src/models.py). HALTED (clean stop, resumable once the
+      triggering condition is cleared) and FAULTED (governance breach, needs human
+      investigation before any resume) are the andon-cord fault states (ADR-0004).
+
+  last_validation:
+    type: string
+    required: false
+    nullable: true
+    default: null
+    enum: [PASS, FAIL]
+    description: >
+      Most recent validation outcome, orthogonal to freeze_status. Preserves the
+      console's validated-pass / validated-fail distinction without overloading the
+      status field. Null until the artifact has been validated at least once.
+
+  frozen_by:
+    type: string
+    required: false
+    nullable: true
+    description: "decided_by identity that authorized the freeze. Required when freeze_status is FROZEN."
+
+  frozen_date:
+    type: string
+    required: false
+    nullable: true
+    format: date
+    description: "ISO 8601 date (YYYY-MM-DD) of the freeze. Required when freeze_status is FROZEN."
+
+# Conditional and authority rules a conformance validator enforces on instances.
+# These are the invariants that keep the single-writer guarantee intact.
+constraints:
+  - id: frozen_requires_provenance
+    rule: "freeze_status == FROZEN implies frozen_by and frozen_date are both present"
+  - id: frozen_writer_authority
+    rule: "FROZEN is written only by the harness apply_freeze_decision (ADR-0002); no driver writes it directly"
+  - id: fault_writer_authority
+    rule: "HALTED and FAULTED are written only by the andon cord (ADR-0004), never by a freeze path"
+  - id: faulted_not_resumable_silently
+    rule: "a transition out of FAULTED requires a recorded human clear (Decision Register entry), not an automatic resume"
+
+# Cross-references for downstream consumers (validators, harness, console, sherpa).
+maps_to:
+  harness_enum: "src/models.py::ArtifactStatus (DRAFT/VALIDATED/FREEZE_PENDING/FROZEN)"
+  harness_writer: "src/state.py::write_artifact_status (to be implemented, Phase 1)"
+  freeze_authority: "src/invariants.py + apply_freeze_decision (ADR-0002)"
+  er_state_block: "docs/engagement/er-*.md §1b State Block"
+  sherpa_protocol: "aieos-sherpa/sherpa-prompt.md freeze protocol (uppercase vocabulary + last_validation, Q11)"
