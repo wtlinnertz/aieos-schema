@@ -22,21 +22,27 @@ section_name: "Document Control"
 # Splitting them avoids the console's original overloaded status enum
 # (validated-pass / validated-fail were freeze states there; here they are
 # a separate last_validation attribute).
+# Each field declares its on-disk `label` — the ``| <label> | <value> |`` row in
+# the artifact's Document Control table — so readers/writers/validators map the
+# markdown to the canonical field name from one place.
 fields:
   artifact_id:
     type: string
     required: true
+    label: "Artifact ID"
     description: "Canonical artifact identifier, e.g. SAD-NOTIFY-001. 'N/A' for id-less artifacts (e.g. Discovery Intake)."
 
   owner:
     type: string
     required: true
+    label: "Owner"
     description: "Accountable owner of the artifact."
 
   freeze_status:
     type: string
     required: true
     default: DRAFT
+    label: "Status"
     enum: [DRAFT, VALIDATED, FREEZE_PENDING, FROZEN, HALTED, FAULTED]
     description: >
       Freeze lifecycle. DRAFT, VALIDATED, FREEZE_PENDING, FROZEN are the harness
@@ -49,6 +55,7 @@ fields:
     required: false
     nullable: true
     default: null
+    label: "Last Validation"
     enum: [PASS, FAIL]
     description: >
       Most recent validation outcome, orthogonal to freeze_status. Preserves the
@@ -59,6 +66,7 @@ fields:
     type: string
     required: false
     nullable: true
+    label: "Frozen By"
     description: "decided_by identity that authorized the freeze. Required when freeze_status is FROZEN."
 
   frozen_date:
@@ -66,6 +74,7 @@ fields:
     required: false
     nullable: true
     format: date
+    label: "Frozen Date"
     description: "ISO 8601 date (YYYY-MM-DD) of the freeze. Required when freeze_status is FROZEN."
 
 # Conditional and authority rules a conformance validator enforces on instances.
@@ -83,7 +92,8 @@ constraints:
 # Cross-references for downstream consumers (validators, harness, console, sherpa).
 maps_to:
   harness_enum: "src/models.py::ArtifactStatus (DRAFT/VALIDATED/FREEZE_PENDING/FROZEN)"
-  harness_writer: "src/state.py::write_artifact_status (to be implemented, Phase 1)"
+  harness_writer: "src/state.py::write_artifact_status"
+  instance_validator: "aieos-schema/scripts/validate-document-control.py"
   freeze_authority: "src/invariants.py + apply_freeze_decision (ADR-0002)"
   er_state_block: "docs/engagement/er-*.md §1b State Block"
   sherpa_protocol: "aieos-sherpa/sherpa-prompt.md freeze protocol (uppercase vocabulary + last_validation, Q11)"
