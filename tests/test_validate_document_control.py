@@ -115,6 +115,18 @@ def test_file_without_document_control_is_skipped(tmp_path):
     assert vdc.validate_file(f, SCHEMA) == []
 
 
+def test_validates_utf8_content_regardless_of_locale(tmp_path):
+    # Curly quotes crashed the validator on Windows (locale cp1252) before
+    # read_text(encoding="utf-8") — regression for the G-2 UTF-8 fix.
+    f = tmp_path / "05-sad.md"
+    f.write_text(
+        block({"Artifact ID": "SAD-X-001", "Owner": "Todd", "Status": "DRAFT"})
+        + "\nApplies to “all services”.\n",
+        encoding="utf-8",
+    )
+    assert vdc.validate_file(f, SCHEMA) == []
+
+
 def test_main_returns_0_on_conformant_dir(tmp_path, capsys):
     (tmp_path / "05-sad.md").write_text(block(
         {"Artifact ID": "SAD-X-001", "Owner": "Todd", "Status": "DRAFT"}
