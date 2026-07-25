@@ -34,9 +34,14 @@ fields:
 
   owner:
     type: string
-    required: true
+    required: false
+    nullable: true
     label: "Owner"
-    description: "Accountable owner of the artifact."
+    description: >
+      Accountable owner of the artifact. Written by the freeze authority
+      (apply_freeze_decision), defaulting to decided_by unless the decision
+      names a distinct owner. Required when freeze_status is FROZEN; templates
+      carry an unenforced placeholder at DRAFT.
 
   freeze_status:
     type: string
@@ -81,7 +86,7 @@ fields:
 # These are the invariants that keep the single-writer guarantee intact.
 constraints:
   - id: frozen_requires_provenance
-    rule: "freeze_status == FROZEN implies frozen_by and frozen_date are both present"
+    rule: "freeze_status == FROZEN implies owner, frozen_by, and frozen_date are all present"
   - id: frozen_writer_authority
     rule: "FROZEN is written only by the harness apply_freeze_decision (ADR-0002); no driver writes it directly"
   - id: fault_writer_authority

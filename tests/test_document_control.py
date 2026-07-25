@@ -59,3 +59,15 @@ def test_freeze_authority_constraints_present(doc_control):
     assert "frozen_requires_provenance" in ids
     assert "frozen_writer_authority" in ids
     assert "fault_writer_authority" in ids
+
+
+def test_owner_conditionally_required_at_frozen(doc_control):
+    """D1: owner is not unconditionally required — it is freeze provenance,
+    written by apply_freeze_decision, enforced only at FROZEN."""
+    owner = doc_control["fields"]["owner"]
+    assert owner["required"] is False
+    prov = next(
+        c for c in doc_control["constraints"]
+        if c["id"] == "frozen_requires_provenance"
+    )
+    assert "owner" in prov["rule"]

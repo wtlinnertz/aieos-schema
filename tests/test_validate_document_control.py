@@ -38,6 +38,12 @@ def test_valid_draft_passes():
     assert check({"Artifact ID": "SAD-X-001", "Owner": "Todd", "Status": "DRAFT"}) == []
 
 
+def test_draft_without_owner_passes():
+    # D1: owner is conditionally required at FROZEN, written by the freeze
+    # authority — a DRAFT block (e.g. a template) needs no enforced owner.
+    assert check({"Artifact ID": "SAD-X-001", "Status": "DRAFT"}) == []
+
+
 def test_valid_frozen_with_provenance_passes():
     assert check({
         "Artifact ID": "SAD-X-001", "Owner": "Todd", "Status": "FROZEN",
@@ -73,9 +79,14 @@ def test_frozen_without_provenance_fails():
     assert any("frozen_date" in i for i in issues)
 
 
-def test_missing_owner_fails():
-    issues = check({"Artifact ID": "SAD-X-001", "Status": "DRAFT"})
-    assert any("owner" in i for i in issues)
+def test_frozen_without_owner_fails():
+    # D1: at FROZEN, owner joins frozen_by/frozen_date under
+    # frozen_requires_provenance.
+    issues = check({
+        "Artifact ID": "SAD-X-001", "Status": "FROZEN",
+        "Frozen By": "Todd", "Frozen Date": "2026-07-18",
+    })
+    assert any("'owner'" in i and "frozen_requires_provenance" in i for i in issues)
 
 
 def test_missing_artifact_id_fails_at_block_level():

@@ -9,7 +9,8 @@ Control table from an AIEOS artifact Markdown file and checks it against
   * ``freeze_status`` is one of the canonical enum values,
   * ``last_validation``, if present, is one of its enum values,
   * the ``frozen_requires_provenance`` constraint holds: a FROZEN artifact
-    carries both ``frozen_by`` and ``frozen_date``.
+    carries ``owner``, ``frozen_by``, and ``frozen_date`` (owner is
+    conditionally required at FROZEN per D1, not at DRAFT).
 
 The validator is driven by the schema (labels, enums, required flags), so it
 stays in sync with the canonical block automatically — add a field or enum
@@ -79,10 +80,11 @@ def validate_block(fields: dict[str, str], schema: dict[str, Any]) -> list[str]:
                     f"field '{field_name}' value {raw!r} not in {allowed}"
                 )
 
-    # Constraint: frozen_requires_provenance.
+    # Constraint: frozen_requires_provenance. owner is conditionally required
+    # at FROZEN (D1) — written by the freeze authority, not enforced at DRAFT.
     status = (fields.get("freeze_status") or "").upper().replace(" ", "_")
     if status == "FROZEN":
-        for prov in ("frozen_by", "frozen_date"):
+        for prov in ("owner", "frozen_by", "frozen_date"):
             if not fields.get(prov):
                 issues.append(
                     f"freeze_status is FROZEN but '{prov}' is missing "
