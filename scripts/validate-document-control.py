@@ -38,7 +38,7 @@ SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema" / "document-cont
 
 
 def load_schema(path: Path = SCHEMA_PATH) -> dict[str, Any]:
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def parse_document_control(text: str, schema: dict[str, Any]) -> dict[str, str]:
@@ -106,7 +106,10 @@ def iter_markdown(paths: list[str]) -> list[Path]:
 
 
 def validate_file(md_file: Path, schema: dict[str, Any]) -> list[str]:
-    text = md_file.read_text()
+    # Artifacts are UTF-8 on disk (the harness writes encoding="utf-8");
+    # without this the Windows locale codec (cp1252) crashes on e.g. curly
+    # quotes, so the validator could not run on Todd's machine at all.
+    text = md_file.read_text(encoding="utf-8")
     # Only artifacts that actually carry a Document Control block are in scope.
     if not re.search(r"\|\s*Artifact\s+ID\s*\|", text, re.IGNORECASE):
         return []
