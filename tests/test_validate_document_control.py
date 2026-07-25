@@ -38,6 +38,12 @@ def test_valid_draft_passes():
     assert check({"Artifact ID": "SAD-X-001", "Owner": "Todd", "Status": "DRAFT"}) == []
 
 
+def test_draft_without_owner_passes():
+    # D1: owner is conditionally required at FROZEN, written by the freeze
+    # authority — a DRAFT block (e.g. a template) needs no enforced owner.
+    assert check({"Artifact ID": "SAD-X-001", "Status": "DRAFT"}) == []
+
+
 def test_valid_frozen_with_provenance_passes():
     assert check({
         "Artifact ID": "SAD-X-001", "Owner": "Todd", "Status": "FROZEN",
@@ -73,9 +79,14 @@ def test_frozen_without_provenance_fails():
     assert any("frozen_date" in i for i in issues)
 
 
-def test_missing_owner_fails():
-    issues = check({"Artifact ID": "SAD-X-001", "Status": "DRAFT"})
-    assert any("owner" in i for i in issues)
+def test_frozen_without_owner_fails():
+    # D1: at FROZEN, owner joins frozen_by/frozen_date under
+    # frozen_requires_provenance.
+    issues = check({
+        "Artifact ID": "SAD-X-001", "Status": "FROZEN",
+        "Frozen By": "Todd", "Frozen Date": "2026-07-18",
+    })
+    assert any("'owner'" in i and "frozen_requires_provenance" in i for i in issues)
 
 
 def test_missing_artifact_id_fails_at_block_level():
@@ -101,6 +112,18 @@ def test_invalid_last_validation_rejected():
 def test_file_without_document_control_is_skipped(tmp_path):
     f = tmp_path / "readme.md"
     f.write_text("# Just prose, no Document Control block\n")
+    assert vdc.validate_file(f, SCHEMA) == []
+
+
+def test_validates_utf8_content_regardless_of_locale(tmp_path):
+    # Curly quotes crashed the validator on Windows (locale cp1252) before
+    # read_text(encoding="utf-8") — regression for the G-2 UTF-8 fix.
+    f = tmp_path / "05-sad.md"
+    f.write_text(
+        block({"Artifact ID": "SAD-X-001", "Owner": "Todd", "Status": "DRAFT"})
+        + "\nApplies to “all services”.\n",
+        encoding="utf-8",
+    )
     assert vdc.validate_file(f, SCHEMA) == []
 
 

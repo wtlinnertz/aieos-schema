@@ -9,7 +9,8 @@ Control table from an AIEOS artifact Markdown file and checks it against
   * ``freeze_status`` is one of the canonical enum values,
   * ``last_validation``, if present, is one of its enum values,
   * the ``frozen_requires_provenance`` constraint holds: a FROZEN artifact
-    carries both ``frozen_by`` and ``frozen_date``.
+    carries ``owner``, ``frozen_by``, and ``frozen_date`` (owner is
+    conditionally required at FROZEN per D1, not at DRAFT).
 
 The validator is driven by the schema (labels, enums, required flags), so it
 stays in sync with the canonical block automatically — add a field or enum
@@ -37,7 +38,7 @@ SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schema" / "document-cont
 
 
 def load_schema(path: Path = SCHEMA_PATH) -> dict[str, Any]:
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def parse_document_control(text: str, schema: dict[str, Any]) -> dict[str, str]:
@@ -79,10 +80,11 @@ def validate_block(fields: dict[str, str], schema: dict[str, Any]) -> list[str]:
                     f"field '{field_name}' value {raw!r} not in {allowed}"
                 )
 
-    # Constraint: frozen_requires_provenance.
+    # Constraint: frozen_requires_provenance. owner is conditionally required
+    # at FROZEN (D1) — written by the freeze authority, not enforced at DRAFT.
     status = (fields.get("freeze_status") or "").upper().replace(" ", "_")
     if status == "FROZEN":
-        for prov in ("frozen_by", "frozen_date"):
+        for prov in ("owner", "frozen_by", "frozen_date"):
             if not fields.get(prov):
                 issues.append(
                     f"freeze_status is FROZEN but '{prov}' is missing "
@@ -104,7 +106,10 @@ def iter_markdown(paths: list[str]) -> list[Path]:
 
 
 def validate_file(md_file: Path, schema: dict[str, Any]) -> list[str]:
-    text = md_file.read_text()
+    # Artifacts are UTF-8 on disk (the harness writes encoding="utf-8");
+    # without this the Windows locale codec (cp1252) crashes on e.g. curly
+    # quotes, so the validator could not run on Todd's machine at all.
+    text = md_file.read_text(encoding="utf-8")
     # Only artifacts that actually carry a Document Control block are in scope.
     if not re.search(r"\|\s*Artifact\s+ID\s*\|", text, re.IGNORECASE):
         return []
