@@ -1,0 +1,130 @@
+# AIEOS Validator Gold Case — v1.0
+#
+# FR-014 slice 2: one human-labeled calibration case for an LLM-backed
+# validator. A gold set is the collection of these under
+# tests/gold/<artifact-type>/ in the kit repo that owns the validator —
+# kit content, human-labeled, governed by kit CI like everything else there.
+#
+# Labels are per HARD GATE, not per artifact: calibration measures the judge
+# at the gate level (a 12-case set against a 14-gate validator yields ~168
+# labeled gate verdicts). G-9's failure was a single-gate flip; artifact-level
+# scoring would blur exactly that.
+#
+# Peer of meta-schema.yaml / document-control.yaml / lock.yaml (top-level,
+# cross-cutting record), so it is intentionally NOT swept by the per-kit
+# conformance tests.
+#
+# References: roadmap FR-014; FR-014 build spec (all six decisions ratified
+# 2026-08-12); interoperability gap register G-9/G-10.
+
+gold_case_version: "1.0"
+record_name: "Validator Gold Case"
+path: "tests/gold/<artifact-type>/<case_id>.yaml"   # in the kit repo owning the validator
+serialization: yaml                                  # human-edited kit content
+
+# Calibration activates for a validator only at this floor (ratified decision 3).
+# Below it, `harness calibrate` refuses and writes no lock.
+activation_floor:
+  min_cases: 12
+  min_spec_exemption_cases: 2   # cases where the spec exempts a requirement and the correct verdict is PASS
+  min_pass_cases: 1             # mechanical minimum; balance beyond this is reviewed, not computed
+  min_fail_cases: 1             # false-PASS measurement is impossible without gold-FAIL gates
+  balance: >
+    PASS-labeled and FAIL-labeled cases must both be well represented;
+    the floor above is the mechanical minimum, the accretion rule is the
+    balancing mechanism (disputed verdicts arrive from both directions).
+
+fields:
+  case_id:
+    type: string
+    required: true
+    description: "Unique within the validator's gold set; the case filename stem."
+
+  artifact_type:
+    type: string
+    required: true
+    description: "Uppercase artifact type code the input represents (SAD, PRD, ...)."
+
+  validator:
+    type: string
+    required: true
+    description: "Identity of the validator this case calibrates, e.g. sad-validator."
+
+  input_path:
+    type: string
+    required: true
+    description: >
+      Path to the input fixture (the artifact content the judge sees),
+      relative to the case file. Content is NOT inlined — real artifacts
+      run 60K+ characters.
+
+  input_sha256:
+    type: string
+    required: true
+    description: >
+      Content pin of the fixture file. Loader verifies before any judge
+      call; mismatch is a load refusal, not a warning — an unpinned gold
+      case silently measures the wrong thing.
+
+  expected_gates:
+    type: map
+    required: true
+    description: >
+      Hard-gate name -> PASS | FAIL. The human labels, one per gate the
+      validator enforces. Gate names must match the validator spec's
+      hard-gate identifiers.
+
+  spec_exemption_case:
+    type: boolean
+    required: true
+    default: false
+    description: >
+      True when the case exercises a spec exemption the judge must honor
+      (the G-9 receipt-1 failure class: judge inventing requirements
+      stricter than the governance it enforces).
+
+  labeled_by:
+    type: string
+    required: true
+    description: "Human who assigned the labels. Never a judge, never a model."
+
+  labeled_date:
+    type: string
+    format: date
+    required: true
+    description: "ISO 8601 date the labels were assigned or last revised."
+
+  source:
+    type: string
+    required: true
+    description: >
+      Where the case came from, e.g. 'G-9 receipt 1' or
+      'EEK run 2026-07-15, disputed verdict'.
+
+  dispute_ref:
+    type: string
+    required: false
+    description: "Link to the disputed run/verdict record, when source is a dispute."
+
+constraints:
+  - id: human_labeled_only
+    rule: >
+      Gold labels are human-assigned or copied from frozen higher-tier
+      references. Never judge-generated — a judge grading its own gold set
+      is the recursion FR-014 exists to prevent.
+  - id: content_pinned
+    rule: "input_sha256 must match the fixture at load time; mismatch refuses the run."
+  - id: activation_floor
+    rule: >
+      Calibration activates per validator only when the gold set meets
+      activation_floor (12 cases, >= 2 spec-exemption, both labels present).
+  - id: accretion_rule
+    rule: >
+      Every disputed verdict in a real run becomes a gold case — the
+      regression-test discipline applied to judges.
+  - id: relabel_with_spec
+    rule: >
+      Whoever changes a validator's spec relabels affected gold cases in
+      the same PR. Enforced for free: the spec change alters the validator
+      prompt, the prompt sha diverges from calibration.lock, CI reports
+      stale until recalibration.

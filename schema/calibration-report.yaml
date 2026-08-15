@@ -1,0 +1,129 @@
+# AIEOS Validator Calibration Report — v1.0
+#
+# FR-014 slice 2: the output of one calibration run of one validator against
+# its gold set. The report is evidence — committed beside the gold set,
+# referenced by calibration.lock (report_ref), never consulted by per-push CI
+# (the lock's hash compare is the CI contract; the report is for humans and
+# audits).
+#
+# The gates are asymmetric by design (ratified decision 1): the dangerous direction
+# is the lenient judge — a false PASS becomes a frozen artifact contaminating
+# everything downstream. Cohen's kappa is computed and STORED here as the
+# drift-trend metric; it is never the gate.
+#
+# Peer of meta-schema.yaml / document-control.yaml / lock.yaml (top-level,
+# cross-cutting record), intentionally NOT swept by per-kit conformance tests.
+#
+# References: roadmap FR-014; FR-014 build spec (ratified 2026-08-12), G-9.
+
+calibration_report_version: "1.0"
+record_name: "Validator Calibration Report"
+path: "tests/gold/<artifact-type>/reports/<validator>-<run_date>.json"
+serialization: json                                  # machine-produced evidence
+
+# Fixed by the ratified spec: three identical runs per case; any gate flip
+# across them is a calibration FAIL regardless of aggregate score (the G-9
+# receipt-2 failure class as a standing test).
+runs_per_case: 3
+
+# Per-role verdict thresholds (ratified decision 2). The harness reads these from
+# this schema — defined once, consumed by code, same as lock.yaml.
+thresholds:
+  freeze-gate:
+    gate_agreement_min: 0.9
+    false_pass_max: 0
+  advisory:
+    gate_agreement_min: 0.75
+    false_pass_max: null        # no false-PASS bar for advisory (lens) judges
+
+fields:
+  report_version:
+    type: string
+    required: true
+    description: "Version of this record format."
+
+  validator:
+    type: string
+    required: true
+    description: "Validator identity calibrated, e.g. sad-validator."
+
+  artifact_type:
+    type: string
+    required: true
+    description: "Uppercase artifact type code of the gold set."
+
+  role:
+    type: string
+    required: true
+    enum: [freeze-gate, advisory]
+    description: "Which threshold row applies. Freeze-gating validators get the asymmetric bar."
+
+  judge:
+    type: object
+    required: true
+    description: >
+      Judge identity: provider, model, prompt_sha256 — the same provenance
+      triple slice 1 stamps on every ledger verdict. prompt_sha256 is the
+      sha of the prompt content the judge actually received.
+
+  run_date:
+    type: string
+    format: date-time
+    required: true
+    description: "ISO 8601 UTC of the calibration run."
+
+  case_count:
+    type: integer
+    required: true
+    description: "Gold cases evaluated (must meet the activation floor)."
+
+  runs_per_case:
+    type: integer
+    required: true
+    description: "Always 3 in v1 (fixed by ratified spec; see top-level runs_per_case)."
+
+  gate_agreement:
+    type: number
+    required: true
+    description: "Fraction of labeled gate verdicts the judge matched, over all cases x gates x runs."
+
+  false_pass_count:
+    type: integer
+    required: true
+    description: "Judge PASS on a gold-FAIL gate, any run. The number that must be zero for freeze-gate roles."
+
+  stability_flips:
+    type: list
+    required: true
+    description: "Each {case_id, gate} where the 3 identical runs disagreed. Non-empty => verdict FAIL."
+
+  kappa:
+    type: number
+    required: true
+    description: "Cohen's kappa vs gold labels. Stored for drift trending only — NEVER a gate."
+
+  verdict:
+    type: string
+    required: true
+    enum: [PASS, FAIL]
+    description: "Calibration outcome after applying the role's thresholds + both hard gates."
+
+  gates:
+    type: map
+    required: true
+    description: "Per-gate matrix: gate name -> {agreements, total, false_pass, flips}."
+
+constraints:
+  - id: kappa_never_gates
+    rule: "kappa is recorded for trend; no verdict logic may read it."
+  - id: zero_false_pass_freeze_gate
+    rule: "role=freeze-gate and false_pass_count > 0 => verdict FAIL, regardless of gate_agreement."
+  - id: any_flip_fails
+    rule: "stability_flips non-empty => verdict FAIL, regardless of aggregate score (G-9 receipt 2)."
+  - id: thresholds_per_role
+    rule: "Verdict applies the thresholds row matching `role`; uniform thresholds are forbidden."
+  - id: report_is_evidence_not_contract
+    rule: >
+      Per-push CI never reads this report; it compares calibration.lock
+      hashes only. The report is the auditable evidence behind the lock's
+      report_ref.
