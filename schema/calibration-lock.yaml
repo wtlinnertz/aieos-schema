@@ -1,0 +1,96 @@
+# AIEOS Validator Calibration Lock — v1.0
+#
+# FR-014 slice 2: the deterministic CI contract. One JSON file per kit repo,
+# at kit root, mapping each LLM-backed validator to the judge identity it was
+# last calibrated under. Per-push CI and the dark-factory conductor compare
+# hashes against it — ZERO LLM calls on the check path. This is the recursion
+# guard: the meta-check stays deterministic, no judge judges the judge.
+#
+# The expensive gold-set run happens only on three triggers: judge model
+# change, validator prompt change, schedule. Any of the first two makes the
+# lock stale by construction (the stored hashes no longer match reality).
+#
+# Serialization is JSON at kit root (ratified 2026-08-12) — the .aieos/lock
+# precedent: machine-compared, human-diffable, no hand-editing invited.
+#
+# Peer of meta-schema.yaml / document-control.yaml / lock.yaml (top-level,
+# cross-cutting record), intentionally NOT swept by per-kit conformance tests.
+#
+# References: roadmap FR-014; FR-014 build spec (ratified 2026-08-12);
+# slice 4 consumes this via the conductor precondition (⚖️ 6).
+
+calibration_lock_version: "1.0"
+record_name: "Validator Calibration Lock"
+path: "calibration.lock"          # kit root, one per kit repo
+serialization: json
+
+# Top-level JSON structure:
+#   { "lock_version": "1.0",
+#     "validators": { "<validator>": { <entry fields below> }, ... } }
+structure:
+  lock_version:
+    type: string
+    required: true
+    description: "Format version of the lock file."
+  validators:
+    type: map
+    required: true
+    description: "Validator identity -> calibration entry (fields below)."
+
+# Fields of each per-validator entry.
+fields:
+  prompt_sha256:
+    type: string
+    required: true
+    description: >
+      sha256 of the validator prompt content as the judge receives it —
+      the same hash slice 1 stamps into verdict provenance. Divergence
+      from the live prompt = stale.
+
+  model:
+    type: string
+    required: true
+    description: "Judge model id at calibration time. Divergence from configured judge = stale."
+
+  gate_agreement:
+    type: number
+    required: true
+    description: "Result carried from the calibration report, for display and trend."
+
+  false_pass_count:
+    type: integer
+    required: true
+    description: "Result carried from the calibration report; 0 for any freeze-gate validator with a valid lock."
+
+  calibrated_at:
+    type: string
+    format: date-time
+    required: true
+    description: "ISO 8601 UTC of the underlying calibration run."
+
+  report_ref:
+    type: string
+    required: true
+    description: "Path to the calibration report (evidence) this entry summarizes."
+
+constraints:
+  - id: hash_compare_only
+    rule: >
+      Staleness = (live prompt sha != prompt_sha256) or (configured judge
+      model != model). String equality, no network, no LLM. This exact
+      check is what kit-ci (slice 3) and the conductor (slice 4) call.
+  - id: recalibration_triggers
+    rule: "Recalibrate on judge model change, validator prompt change, or schedule — nothing else forces a paid run."
+  - id: measures_never_corrects
+    rule: >
+      Calibration measures the judge; it never corrects artifacts and never
+      writes artifact status — same refusal shape as mark-status refusing
+      FROZEN.
+  - id: conductor_precondition
+    rule: >
+      An UNATTENDED dark-factory walk refuses if any validator on the path
+      has a stale or failing lock; ATTENDED runs warn and proceed
+      (ratified ⚖️ 6). This is what makes 'FR-014 keeps a human at every
+      promotion gate' mechanical.
+  - id: committed_artifact
+    rule: "calibration.lock is committed and versioned; a missing lock is stale by definition."
