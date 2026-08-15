@@ -22,7 +22,7 @@ record_name: "Validator Gold Case"
 path: "tests/gold/<artifact-type>/<case_id>.yaml"   # in the kit repo owning the validator
 serialization: yaml                                  # human-edited kit content
 
-# Calibration activates for a validator only at this floor (ratified ⚖️ 3).
+# Calibration activates for a validator only at this floor (ratified decision 3).
 # Below it, `harness calibrate` refuses and writes no lock.
 activation_floor:
   min_cases: 12

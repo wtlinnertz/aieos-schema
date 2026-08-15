@@ -16,17 +16,17 @@ SCHEMA_DIR = Path(__file__).parent.parent / "schema"
 
 @pytest.fixture(scope="module")
 def gold_case():
-    return yaml.safe_load((SCHEMA_DIR / "gold-case.yaml").read_text())
+    return yaml.safe_load((SCHEMA_DIR / "gold-case.yaml").read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
 def report():
-    return yaml.safe_load((SCHEMA_DIR / "calibration-report.yaml").read_text())
+    return yaml.safe_load((SCHEMA_DIR / "calibration-report.yaml").read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
 def lock():
-    return yaml.safe_load((SCHEMA_DIR / "calibration-lock.yaml").read_text())
+    return yaml.safe_load((SCHEMA_DIR / "calibration-lock.yaml").read_text(encoding="utf-8"))
 
 
 class TestGoldCaseSchema:

@@ -17,7 +17,7 @@
 # cross-cutting record), intentionally NOT swept by per-kit conformance tests.
 #
 # References: roadmap FR-014; FR-014 build spec (ratified 2026-08-12);
-# slice 4 consumes this via the conductor precondition (⚖️ 6).
+# slice 4 consumes this via the conductor precondition (decision 6).
 
 calibration_lock_version: "1.0"
 record_name: "Validator Calibration Lock"
@@ -90,7 +90,7 @@ constraints:
     rule: >
       An UNATTENDED dark-factory walk refuses if any validator on the path
       has a stale or failing lock; ATTENDED runs warn and proceed
-      (ratified ⚖️ 6). This is what makes 'FR-014 keeps a human at every
+      (ratified decision 6). This is what makes 'FR-014 keeps a human at every
       promotion gate' mechanical.
   - id: committed_artifact
     rule: "calibration.lock is committed and versioned; a missing lock is stale by definition."

@@ -6,7 +6,7 @@
 # (the lock's hash compare is the CI contract; the report is for humans and
 # audits).
 #
-# The gates are asymmetric by design (ratified ⚖️ 1): the dangerous direction
+# The gates are asymmetric by design (ratified decision 1): the dangerous direction
 # is the lenient judge — a false PASS becomes a frozen artifact contaminating
 # everything downstream. Cohen's kappa is computed and STORED here as the
 # drift-trend metric; it is never the gate.
@@ -26,7 +26,7 @@ serialization: json                                  # machine-produced evidence
 # receipt-2 failure class as a standing test).
 runs_per_case: 3
 
-# Per-role verdict thresholds (ratified ⚖️ 2). The harness reads these from
+# Per-role verdict thresholds (ratified decision 2). The harness reads these from
 # this schema — defined once, consumed by code, same as lock.yaml.
 thresholds:
   freeze-gate:
