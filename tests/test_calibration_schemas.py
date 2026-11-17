@@ -55,6 +55,12 @@ class TestGoldCaseSchema:
             assert fields[name].get("required") is True
         assert fields["dispute_ref"].get("required") is False
 
+    def test_upstream_dir_is_optional_per_case_override(self, gold_case):
+        # 2026-11-16: a case from another initiative carries its own upstream.
+        field = gold_case["fields"]["upstream_dir"]
+        assert field.get("required") is False
+        assert field["type"] == "string"
+
     def test_input_is_pointer_not_inline(self, gold_case):
         fields = gold_case["fields"]
         assert "input_path" in fields and "input_sha256" in fields

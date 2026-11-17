@@ -101,6 +101,17 @@ fields:
       Where the case came from, e.g. 'G-9 receipt 1' or
       'EEK run 2026-07-15, disputed verdict'.
 
+  upstream_dir:
+    type: string
+    required: false
+    description: >
+      Directory of the upstream artifacts (PRD, ACF, ...) this case was
+      written against, relative to the case file. Overrides the gold set's
+      shared upstream directory for this case only. Needed when a case comes
+      from a different initiative than the rest of the set: handing the
+      judge another initiative's PRD measures the wrong context (the G-9
+      receipt case, found 2026-11-16).
+
   dispute_ref:
     type: string
     required: false
